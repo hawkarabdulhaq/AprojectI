@@ -1,7 +1,6 @@
 import streamlit as st
 from theme import apply_dark_theme
 from database import create_tables
-from login import show_login_create_account
 from sidebar import show_sidebar
 from home import show_home
 from style import show_footer  # Import the footer function
@@ -99,8 +98,9 @@ def main():
             st.warning("Unknown selection.")
 
     else:
-        # If not logged in, show login/create account pages
-        show_login_create_account()
+        # If not logged in, show the offer page first
+        import offer
+        offer.show_offer()
 
     # Add the global footer (this will appear on all pages)
     show_footer()
