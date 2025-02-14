@@ -12,7 +12,6 @@ def send_password_email(recipient_email, username, password):
     Sends an email with the user's password using TLS on port 587.
     """
     try:
-        # Get SMTP configuration from st.secrets.
         smtp_server = st.secrets["smtp"]["server"]
         smtp_port = st.secrets["smtp"]["port"]
         smtp_email = st.secrets["smtp"]["email"]
@@ -98,6 +97,11 @@ def show_login_create_account():
     # LOGIN TAB
     with tabs[0]:
         st.subheader("🔑 Login")
+        # Add a "Back to Offer" button
+        if st.button("Back to Offer", key="back_to_offer"):
+            st.experimental_set_query_params(page="offer")
+            st.experimental_rerun()
+
         username = st.text_input("Username", key="login_username")
         password = st.text_input("Password", type="password", key="login_password")
         if st.button("Login"):
@@ -108,8 +112,7 @@ def show_login_create_account():
                 st.session_state["logged_in"] = True
                 st.session_state["username"] = username
                 st.success("✅ Login successful!")
-                if hasattr(st, "experimental_rerun"):
-                    st.experimental_rerun()
+                st.experimental_rerun()
             else:
                 st.error("❌ Invalid username or password.")
 
@@ -133,7 +136,6 @@ def show_login_create_account():
                     st.error("⚠️ Username or Password already exists. Choose a different one.")
                 else:
                     st.success("✅ Account created! Please wait for admin approval before logging in.")
-                    # Push changes to GitHub; ensure push_db_to_github uses the repo and token from st.secrets
                     push_db_to_github(st.secrets["general"]["db_path"])
             else:
                 st.error("⚠️ Please fill out all fields.")
