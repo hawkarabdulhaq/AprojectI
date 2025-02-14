@@ -1,9 +1,5 @@
 import streamlit as st
 
 def show():
-    st.title("Login X")
-    st.info("Not available yet.")
-
-if __name__ == '__main__':
-    show()
-
+    st.title("Login for Course 2")
+    st.info("This feature is not available yet.")
