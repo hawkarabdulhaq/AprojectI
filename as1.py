@@ -120,7 +120,6 @@ def show():
             - **Comments:** 2 points (deducted if no comments are present).
             - **Code Organization:** 2 points (deducted if no blank lines are used for separation).
         """)
-            # Add "See More" expandable section
             with st.expander("See More"):
                 st.markdown("""
         #### 2. Map Visualization (40 points)
