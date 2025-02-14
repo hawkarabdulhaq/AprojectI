@@ -49,7 +49,7 @@ def create_ml_svg() -> str:
     </svg>"""
 
 def show() -> None:
-    """Render the Streamlit application with course offers using HTML for better styling."""
+    """Render the Streamlit application with course offers and custom styling."""
     # Inject CSS styles
     st.markdown(
         """
@@ -73,39 +73,29 @@ def show() -> None:
     to { transform: translateX(0); opacity: 1; }
 }
 
-/* Main Container Styles */
-.main-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    background: linear-gradient(180deg, #F8FAFC 0%, #EDF2F7 100%);
-    min-height: 100vh;
-}
-
-/* Header Styles */
+/* Header Styles - Removed rectangular background */
 .hero-section {
     text-align: center;
     padding: 3rem 0;
-    background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
-    border-radius: 20px;
-    margin-bottom: 3rem;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* Header Text Styles */
+.hero-title, .hero-subtitle {
+    color: #1E293B;
+    animation: slideIn 1s ease-out;
 }
 
 .hero-title {
     font-size: 4rem;
-    color: #F8FAFC;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     font-weight: 800;
     text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    animation: slideIn 1s ease-out;
 }
 
 .hero-subtitle {
     font-size: 1.8rem;
-    color: #94A3B8;
     font-weight: 500;
-    animation: slideIn 1s ease-out 0.2s both;
+    opacity: 0.8;
 }
 
 /* Course Card Styles */
@@ -129,13 +119,15 @@ def show() -> None:
     animation: float 6s ease-in-out infinite;
 }
 
+/* Course Title in Pale Orange */
 .course-title {
     font-size: 2.2rem;
-    color: #1E293B;
+    color: #FFA07A; /* Pale Orange */
     margin-bottom: 1.5rem;
     font-weight: 700;
 }
 
+/* Impact and Chapters Section */
 .impact-section {
     background: #F1F5F9;
     padding: 1.5rem;
@@ -236,7 +228,7 @@ def show() -> None:
         unsafe_allow_html=True,
     )
 
-    # Render header section without extra indentation
+    # Render header section without rectangular background
     st.markdown(
         """
 <div class="hero-section">
@@ -253,6 +245,7 @@ def show() -> None:
         "Course 2: Advanced Machine Learning"
     ])
 
+    # Course 1 Section with updated heading texts
     with tabs[0]:
         st.markdown(
             f"""
@@ -260,7 +253,7 @@ def show() -> None:
     {create_programming_svg()}
     <h2 class="course-title">Foundations of Python Programming and Applied Coding</h2>
     <div class="impact-section">
-        <h3 class="impact-title">🎯 Impact</h3>
+        <h3 class="impact-title">Impact</h3>
         <p class="impact-text">
             Participants gain foundational skills in Python programming and learn to create robust scripts,
             work with APIs, and utilize tools like Google Colab and GitHub. This course enables learners to
@@ -268,7 +261,7 @@ def show() -> None:
         </p>
     </div>
     <div class="chapters-section">
-        <h3 class="impact-title">📚 Course Chapters</h3>
+        <h3 class="impact-title">Course Chapters</h3>
         <div class="chapter-item">Week 1: Introduction to Coding</div>
         <div class="chapter-item">Week 2: Generate Comprehensive Codings</div>
         <div class="chapter-item">Week 3: Deploy Apps with GitHub and Streamlit</div>
@@ -285,6 +278,7 @@ def show() -> None:
             st.session_state["page"] = "login"
             st.experimental_rerun()
 
+    # Course 2 Section with updated heading texts
     with tabs[1]:
         st.markdown(
             f"""
@@ -292,7 +286,7 @@ def show() -> None:
     {create_ml_svg()}
     <h2 class="course-title">Advanced Machine Learning and Real-Time Deployment</h2>
     <div class="impact-section">
-        <h3 class="impact-title">🎯 Impact</h3>
+        <h3 class="impact-title">Impact</h3>
         <p class="impact-text">
             Participants develop advanced skills in database management, machine learning, and real-time application deployment.
             This course focuses on practical implementations, enabling learners to create AI-driven solutions, deploy them in
@@ -300,7 +294,7 @@ def show() -> None:
         </p>
     </div>
     <div class="chapters-section">
-        <h3 class="impact-title">📚 Course Chapters</h3>
+        <h3 class="impact-title">Course Chapters</h3>
         <div class="chapter-item">Week 1: Advanced SQL and Databases</div>
         <div class="chapter-item">Week 2: Deploy Database</div>
         <div class="chapter-item">Week 3: Unsupervised Machine Learning</div>
