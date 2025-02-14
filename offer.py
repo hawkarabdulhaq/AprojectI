@@ -4,7 +4,6 @@ def show_offer():
     st.title("AI for Impact")
     st.header("What We Offer")
     
-    # Create two tabs for the two courses
     tabs = st.tabs(["Course 1", "Course 2"])
     
     # Course 1 tab
@@ -22,10 +21,11 @@ def show_offer():
 **📌 Availability:** ✅ Included in Basic, Pro, and VIP Plans
 """)
         if st.button("Start Course 1"):
-            # Set a flag to indicate navigation to login.py
-            st.session_state["navigate"] = "login"
-            st.experimental_rerun()
-            
+            # Only update and rerun if the current navigation is still "offer"
+            if st.session_state.get("navigate", "offer") == "offer":
+                st.session_state["navigate"] = "login"
+                st.experimental_rerun()
+                
     # Course 2 tab
     with tabs[1]:
         st.subheader("Course 2: Advanced Machine Learning and Real-Time Deployment")
@@ -43,9 +43,9 @@ def show_offer():
 **📌 Availability:** ✅ Included in Pro and VIP Plans (Not available in Basic Plan)
 """)
         if st.button("Start Course 2"):
-            # Set a flag to indicate navigation to loginx.py (the not available yet page)
-            st.session_state["navigate"] = "loginx"
-            st.experimental_rerun()
+            if st.session_state.get("navigate", "offer") == "offer":
+                st.session_state["navigate"] = "loginx"
+                st.experimental_rerun()
 
 if __name__ == "__main__":
     show_offer()
