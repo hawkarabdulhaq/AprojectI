@@ -33,7 +33,7 @@ def show():
     </style>
     """, unsafe_allow_html=True)
 
-    # Digital headers for "AI for Impact" and "What We Offer"
+    # Place the headers at the top of the page
     st.markdown('<div class="digital-header">AI for Impact</div>', unsafe_allow_html=True)
     st.markdown('<div class="digital-header">What We Offer</div>', unsafe_allow_html=True)
 
