@@ -21,7 +21,10 @@ def show_offer():
         
         if st.button("Start Course 1"):
             st.session_state["selected_offer"] = "course1"
-            st.experimental_rerun()
+            if hasattr(st, "experimental_rerun"):
+                st.experimental_rerun()
+            else:
+                st.write("Please refresh the page manually to continue.")
 
     with tabs[1]:
         st.header("Course 2: Advanced Machine Learning and Real-Time Deployment")
@@ -40,4 +43,7 @@ def show_offer():
         
         if st.button("Start Course 2"):
             st.session_state["selected_offer"] = "course2"
-            st.experimental_rerun()
+            if hasattr(st, "experimental_rerun"):
+                st.experimental_rerun()
+            else:
+                st.write("Please refresh the page manually to continue.")
