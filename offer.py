@@ -22,7 +22,6 @@ def show_offer():
         st.markdown("📌 **Availability:** ✅ Included in Basic, Pro, and VIP Plans")
         if st.button("Start", key="start_course1"):
             st.session_state["course"] = "course1"
-            st.experimental_rerun()
 
     with tabs[1]:
         st.markdown("### Course 2: Advanced Machine Learning and Real-Time Deployment")
@@ -39,7 +38,10 @@ def show_offer():
         st.markdown("📌 **Availability:** ✅ Included in Pro and VIP Plans (Not available in Basic Plan)")
         if st.button("Start", key="start_course2"):
             st.session_state["course"] = "course2"
-            st.experimental_rerun()
+
+    # If a course was selected, rerun the app to load the next page.
+    if "course" in st.session_state:
+        st.experimental_rerun()
 
 if __name__ == "__main__":
     show_offer()
