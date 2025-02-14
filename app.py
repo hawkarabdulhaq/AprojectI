@@ -1,6 +1,7 @@
 import streamlit as st
 from theme import apply_dark_theme
 from database import create_tables
+import offer  # New import for the offer page
 from login import show_login_create_account
 from sidebar import show_sidebar
 from home import show_home
@@ -10,30 +11,27 @@ def main():
     # Must be the FIRST Streamlit command
     st.set_page_config(page_title="Code for Impact", layout="wide")
 
-    # Apply dark theme
+    # Apply dark theme and ensure tables exist
     apply_dark_theme()
-    
-    # Ensure tables exist (and DB is pulled from GitHub if you're doing that in create_tables)
     create_tables()
 
-    # Track login state
-    if "logged_in" not in st.session_state:
-        st.session_state["logged_in"] = False
+    # Check for a query parameter; default to "offer"
+    query_params = st.experimental_get_query_params()
+    page = query_params.get("page", ["offer"])[0]
 
-    if st.session_state["logged_in"]:
-        # Use your sidebar to get the chosen page
+    # If the user is already logged in, show the main sidebar & pages.
+    if st.session_state.get("logged_in", False):
         selected = show_sidebar()
 
         if selected == "logout":
             st.session_state["logged_in"] = False
-            st.rerun()
+            st.experimental_rerun()
 
         elif selected == "home":
             show_home()
 
-        # ─────────────────────────────────────────────────────────────────
+        # ─────────────────────────────────────────────────────────────
         # Handle Assignments
-        # ─────────────────────────────────────────────────────────────────
         elif selected == "as1":
             import as1
             as1.show()
@@ -50,9 +48,8 @@ def main():
             import as4
             as4.show()
 
-        # ─────────────────────────────────────────────────────────────────
+        # ─────────────────────────────────────────────────────────────
         # Handle Quizzes
-        # ─────────────────────────────────────────────────────────────────
         elif selected == "quiz1":
             import quiz1
             quiz1.show()
@@ -61,16 +58,14 @@ def main():
             import quiz2
             quiz2.show()
 
-        # ─────────────────────────────────────────────────────────────────
-        # Handle Help (if you have a help.py module)
-        # ─────────────────────────────────────────────────────────────────
+        # ─────────────────────────────────────────────────────────────
+        # Handle Help
         elif selected == "help":
             import help
             help.show()
 
-        # ─────────────────────────────────────────────────────────────────
+        # ─────────────────────────────────────────────────────────────
         # Handle Modules
-        # ─────────────────────────────────────────────────────────────────
         elif selected == "modules_intro":
             import modules_intro
             modules_intro.show()
@@ -99,8 +94,17 @@ def main():
             st.warning("Unknown selection.")
 
     else:
-        # If not logged in, show login/create account pages
-        show_login_create_account()
+        # If not logged in, display pages based on the query parameter.
+        if page == "offer":
+            offer.show()
+        elif page == "login":
+            show_login_create_account()
+        elif page == "loginx":
+            import loginx
+            loginx.show()
+        else:
+            # Fallback to the offer page if the query parameter is unrecognized.
+            offer.show()
 
     # Add the global footer (this will appear on all pages)
     show_footer()
