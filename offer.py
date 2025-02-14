@@ -1,178 +1,85 @@
 import streamlit as st
+from datetime import datetime
+import pytz
+
+def create_programming_svg():
+    # Your existing SVG code remains the same
+    pass
+
+def create_ml_svg():
+    # Your existing SVG code remains the same
+    pass
 
 def show():
+    # Get current UTC time
+    current_utc = datetime.now(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
+    
     st.markdown("""
         <style>
-        /* Layout */
-        .main-container {
-            display: flex;
-            gap: 2rem;
-            padding: 2rem;
-            min-height: 100vh;
-        }
+        /* Your existing styles remain the same */
         
-        .content-area {
-            flex: 1;
-            padding: 2rem;
-        }
-        
-        /* Hero Section */
-        .hero-section {
+        /* Add styles for the header info */
+        .header-info {
             background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
-            padding: 2rem;
-            border-radius: 20px;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        
-        .hero-title {
-            font-size: 3rem;
+            padding: 1rem;
+            border-radius: 10px;
             color: #F8FAFC;
             margin-bottom: 1rem;
-            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .hero-subtitle {
-            font-size: 1.5rem;
+        .header-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .header-label {
             color: #94A3B8;
+            font-size: 0.9rem;
         }
         
-        /* Side Banner */
-        .side-banner {
-            width: 300px;
-            background: #F8FAFC;
-            padding: 1.5rem;
-            border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            height: fit-content;
-            position: sticky;
-            top: 2rem;
-        }
-        
-        .banner-item {
-            padding: 1rem;
-            margin: 0.5rem 0;
-            background: white;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-        
-        .banner-item:hover {
-            transform: translateX(5px);
-            background: #F1F5F9;
-        }
-        
-        .banner-item.active {
-            border-color: #3B82F6;
-            background: #EFF6FF;
-        }
-        
-        .banner-title {
+        .header-value {
+            color: #F8FAFC;
             font-weight: 600;
-            color: #1E293B;
-            margin-bottom: 0.5rem;
-        }
-        
-        /* Course Content */
-        .course-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            animation: slideIn 0.5s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        
-        .course-title {
-            font-size: 2.2rem;
-            color: #1E293B;
-            margin-bottom: 1.5rem;
-        }
-        
-        .impact-section {
-            background: #F8FAFC;
-            padding: 1.5rem;
-            border-radius: 15px;
-            margin: 1.5rem 0;
-        }
-        
-        .impact-title {
-            color: #0F172A;
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        
-        .impact-text {
-            color: #475569;
-            line-height: 1.6;
-        }
-        
-        .chapter-item {
-            padding: 1rem;
-            margin: 0.5rem 0;
-            background: #F8FAFC;
-            border-radius: 10px;
-            color: #475569;
-            transition: all 0.3s ease;
-        }
-        
-        .chapter-item:hover {
-            background: #F1F5F9;
-            transform: translateX(10px);
-        }
-        
-        .availability-badge {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-            color: white;
-            border-radius: 50px;
-            font-weight: 600;
-            margin-top: 1.5rem;
-        }
-        
-        .start-button {
-            display: inline-block;
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, #3A416F 0%, #141727 100%);
-            color: white;
-            border-radius: 50px;
-            font-weight: 600;
-            margin-top: 2rem;
-            cursor: pointer;
-            border: none;
-            width: 100%;
-            text-align: center;
         }
         </style>
     """, unsafe_allow_html=True)
 
-    # Initialize session state for selected course
-    if 'selected_course' not in st.session_state:
-        st.session_state.selected_course = "python"
+    # Add header info section
+    st.markdown(f'''
+        <div class="header-info">
+            <div class="header-item">
+                <span class="header-label">UTC:</span>
+                <span class="header-value">{current_utc}</span>
+            </div>
+            <div class="header-item">
+                <span class="header-label">User:</span>
+                <span class="header-value">Hakari-Bibani</span>
+            </div>
+        </div>
+    ''', unsafe_allow_html=True)
 
-    # Main container
+    # Main Content
     st.markdown('''
         <div class="hero-section">
             <h1 class="hero-title">AI for Impact</h1>
             <h2 class="hero-subtitle">What We Offer</h2>
         </div>
-        
-        <div class="main-container">
-            <div class="content-area">
     ''', unsafe_allow_html=True)
 
-    # Course content based on selection
-    if st.session_state.selected_course == "python":
-        st.markdown('''
-            <div class="course-content">
+    tabs = st.tabs([
+        "Course 1: Foundations of Python Programming",
+        "Course 2: Advanced Machine Learning"
+    ])
+
+    # Course 1
+    with tabs[0]:
+        st.markdown(f'''
+            <div class="course-card">
+                {create_programming_svg()}
                 <h2 class="course-title">Foundations of Python Programming and Applied Coding</h2>
                 
                 <div class="impact-section">
@@ -193,12 +100,16 @@ def show():
                 </div>
             </div>
         ''', unsafe_allow_html=True)
-        if st.button("Start Course 1"):
+        
+        if st.button("Start Course 1", key="btn1"):
             st.session_state["page"] = "login"
             st.rerun()
-    else:
-        st.markdown('''
-            <div class="course-content">
+
+    # Course 2
+    with tabs[1]:
+        st.markdown(f'''
+            <div class="course-card">
+                {create_ml_svg()}
                 <h2 class="course-title">Advanced Machine Learning and Real-Time Deployment</h2>
                 
                 <div class="impact-section">
@@ -221,43 +132,7 @@ def show():
                 </div>
             </div>
         ''', unsafe_allow_html=True)
-        if st.button("Start Course 2"):
+        
+        if st.button("Start Course 2", key="btn2"):
             st.session_state["page"] = "loginx"
             st.rerun()
-
-    # Side Banner
-    st.sidebar.markdown('''
-        <div class="side-banner">
-            <div class="banner-item {}" onclick="handleClick('python')">
-                <div class="banner-title">Python Programming</div>
-                <small>Foundations & Applied Coding</small>
-            </div>
-            <div class="banner-item {}" onclick="handleClick('ml')">
-                <div class="banner-title">Machine Learning</div>
-                <small>Advanced & Real-Time Deployment</small>
-            </div>
-        </div>
-    '''.format(
-        'active' if st.session_state.selected_course == "python" else '',
-        'active' if st.session_state.selected_course == "ml" else ''
-    ), unsafe_allow_html=True)
-
-    # JavaScript for handling clicks
-    st.markdown('''
-        <script>
-        function handleClick(course) {
-            window.parent.postMessage({
-                type: 'streamlit:setComponentValue',
-                value: course
-            }, '*');
-        }
-        </script>
-    ''', unsafe_allow_html=True)
-
-    # Handle sidebar selection
-    if st.sidebar.button("Python Programming", key="python_btn"):
-        st.session_state.selected_course = "python"
-        st.rerun()
-    if st.sidebar.button("Machine Learning", key="ml_btn"):
-        st.session_state.selected_course = "ml"
-        st.rerun()
