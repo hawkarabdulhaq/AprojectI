@@ -1,19 +1,22 @@
 import sqlite3
 import streamlit as st
+import os
 
 def create_tables():
     db_path = st.secrets["general"]["db_path"]
 
-    try:
-        from github_sync import pull_db_from_github
-        pull_db_from_github(db_path)
-    except Exception as e:
-        st.error(f"Error pulling DB from GitHub: {e}")
+    # Only pull from GitHub if the local database file does not exist
+    if not os.path.exists(db_path):
+        try:
+            from github_sync import pull_db_from_github
+            pull_db_from_github(db_path)
+        except Exception as e:
+            st.error(f"Error pulling DB from GitHub: {e}")
 
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    # Create the users table (unchanged)
+    # Create the users table
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS users (
         fullname TEXT,
@@ -40,7 +43,7 @@ def create_tables():
     )
     ''')
 
-    # Create the tracks table (unchanged)
+    # Create the tracks table
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS tracks (
         username TEXT,
@@ -60,8 +63,6 @@ def create_tables():
 
     conn.commit()
     conn.close()
-    # The following line has been removed:
-    # st.info("Database created/updated successfully.")
 
 if __name__ == "__main__":
     create_tables()
