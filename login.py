@@ -107,7 +107,7 @@ def show_login_create_account():
                 st.session_state["username"] = username
                 st.session_state["page"] = "home"
                 st.success("✅ Login successful!")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("❌ Invalid username or password.")
 
