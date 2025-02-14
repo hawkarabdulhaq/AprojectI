@@ -23,7 +23,7 @@ def main():
         if selected == "logout":
             st.session_state["logged_in"] = False
             st.session_state["page"] = "offer"
-            st.experimental_rerun()
+            st.rerun()
         elif selected == "home":
             show_home()
 
