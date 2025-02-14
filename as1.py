@@ -59,7 +59,7 @@ def show():
         tab1, tab2 = st.tabs(["Assignment Details", "Grading Details"])
 
         with tab1:
-          st.markdown("""
+            st.markdown("""
          ### Objective
           In this assignment, you will write a Python script to plot three geographical coordinates on a map and calculate the distance between each pair of points in kilometers. This will help you practice working with geospatial data and Python libraries for mapping and calculations.
     
@@ -68,7 +68,7 @@ def show():
          In this assignment, you will write a Python script to plot three geographical coordinates on a map and calculate the distance between each pair of points in kilometers. This will help you practice working with geospatial data and Python libraries for mapping and calculations.
           """)
         with st.expander("See More"):
-         st.markdown("""
+            st.markdown("""
          **Task Requirements:**
         1. **Plot the Three Coordinates on a Map:**
            - The coordinates represent three locations in the Kurdistan Region.
@@ -98,7 +98,6 @@ def show():
            - Point 2 and Point 3.
            - Point 1 and Point 3.
         """)
-
         with tab2:
             st.markdown("""
             ### Detailed Grading Breakdown
@@ -121,9 +120,9 @@ def show():
             - **Comments:** 2 points (deducted if no comments are present).
             - **Code Organization:** 2 points (deducted if no blank lines are used for separation).
         """)
-        # Add "See More" expandable section
-        with st.expander("See More"):
-            st.markdown("""
+            # Add "See More" expandable section
+            with st.expander("See More"):
+                st.markdown("""
         #### 2. Map Visualization (40 points)
         - **Map Generation (15 points):**
             - Checks if the `folium.Map` is correctly initialized.
@@ -210,35 +209,27 @@ def show():
                 from grades.grade1 import grade_assignment
                 grade = grade_assignment(code_input)
 
-                # Optionally, avoid pulling the DB from GitHub here if it might overwrite your changes.
-                # pull_db_from_github(db_path)  # Uncomment only if necessary
-
                 # Update the grade in the records table for this username
                 conn = sqlite3.connect(db_path)
                 cursor = conn.cursor()
                 cursor.execute("UPDATE records SET as1 = ? WHERE username = ?", (grade, st.session_state["username"]))
                 conn.commit()
-                updated_rows = cursor.rowcount  # Check how many rows were updated
                 conn.close()
 
-                if updated_rows == 0:
-                    st.error("No record updated. Please check the username or database integrity.")
+                st.info("Grade updated locally. Pushing changes to GitHub...")
+                push_db_to_github(db_path)
+
+                # Re-open connection to verify the updated grade
+                conn = sqlite3.connect(db_path)
+                cursor = conn.cursor()
+                cursor.execute("SELECT as1 FROM records WHERE username = ?", (st.session_state["username"],))
+                result = cursor.fetchone()
+                conn.close()
+
+                if result and result[0] == grade:
+                    st.success(f"Submission successful! Your grade: {result[0]}/100")
                 else:
-                    st.info("Grade updated locally. Pushing changes to GitHub...")
-                    push_db_to_github(db_path)
-
-                    # Re-open connection to verify the updated grade
-                    conn = sqlite3.connect(db_path)
-                    cursor = conn.cursor()
-                    cursor.execute("SELECT as1 FROM records WHERE username = ?", (st.session_state["username"],))
-                    result = cursor.fetchone()
-                    conn.close()
-
-                    if result:
-                        new_grade = result[0]
-                        st.success(f"Submission successful! Your grade: {new_grade}/100")
-                    else:
-                        st.error("Error retrieving the updated grade.")
+                    st.error("Error retrieving or updating the grade.")
             else:
                 st.error("Please enter your username to submit.")
 
