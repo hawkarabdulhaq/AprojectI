@@ -9,11 +9,10 @@ def show():
         "Course 2: Advanced Machine Learning and Real-Time Deployment"
     ])
 
-    # Tab for Course 1
+    # Course 1 Tab
     with tabs[0]:
         st.subheader("Course 1: Foundations of Python Programming and Applied Coding")
-        st.markdown(
-            """
+        st.markdown("""\
 Impact: Participants will gain foundational skills in Python programming and learn to create robust scripts, work with APIs, and utilize tools like Google Colab and GitHub. This course enables learners to automate tasks, process data, and build basic web applications.
 
 **Course Chapters:**
@@ -23,17 +22,15 @@ Impact: Participants will gain foundational skills in Python programming and lea
 - Week 4: Data Week
 
 📌 **Availability:** ✅ Included in Basic, Pro, and VIP Plans
-            """
-        )
+""")
         if st.button("Start Course 1"):
             st.session_state["page"] = "login"
             st.rerun()
 
-    # Tab for Course 2
+    # Course 2 Tab
     with tabs[1]:
         st.subheader("Course 2: Advanced Machine Learning and Real-Time Deployment")
-        st.markdown(
-            """
+        st.markdown("""\
 Impact: Participants will develop advanced skills in database management, machine learning, and real-time application deployment. This course focuses on practical implementations, enabling learners to create AI-driven solutions, deploy them in real-world scenarios, and integrate apps with cloud and database systems.
 
 **Course Chapters:**
@@ -45,8 +42,7 @@ Impact: Participants will develop advanced skills in database management, machin
 - Week 6: Capstone Project
 
 📌 **Availability:** ✅ Included in Pro and VIP Plans (Not available in Basic Plan)
-            """
-        )
+""")
         if st.button("Start Course 2"):
             st.session_state["page"] = "loginx"
             st.rerun()
