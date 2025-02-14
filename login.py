@@ -1,17 +1,17 @@
+# login.py - Manages user authentication, registration, and password recovery
 import streamlit as st
 import sqlite3
 import smtplib
 from email.message import EmailMessage
 from database import create_tables
 from theme import apply_dark_theme
-from github_sync import push_db_to_github  # Ensure this function uses st.secrets["general"]["repo"] and st.secrets["general"]["token"]
+from github_sync import push_db_to_github  # Uses st.secrets["general"]["repo"] and st.secrets["general"]["token"]
 
 def send_password_email(recipient_email, username, password):
     """
     Sends an email with the user's password using TLS on port 587.
     """
     try:
-        # Get SMTP configuration from st.secrets.
         smtp_server = st.secrets["smtp"]["server"]
         smtp_port = st.secrets["smtp"]["port"]
         smtp_email = st.secrets["smtp"]["email"]
@@ -42,12 +42,12 @@ def send_password_email(recipient_email, username, password):
 
 def register_user(fullname, email, phone, username, password):
     """
-    Registers a new user in the database with approved=0.
+    Registers a new user in the database with approved status 0.
     """
     conn = sqlite3.connect(st.secrets["general"]["db_path"])
     cursor = conn.cursor()
 
-    # Check if the password is already taken.
+    # Check if the password is already used.
     cursor.execute("SELECT 1 FROM users WHERE password = ?", (password,))
     if cursor.fetchone() is not None:
         conn.close()
@@ -69,8 +69,7 @@ def register_user(fullname, email, phone, username, password):
 def login_user(username, password):
     """
     Validates username/password and checks if the user is approved.
-    Returns the user row if valid and approved, "not_approved" if the user exists but is not approved,
-    or None if credentials are invalid.
+    Returns the user row if valid and approved, "not_approved" if not approved, or None if invalid.
     """
     conn = sqlite3.connect(st.secrets["general"]["db_path"])
     cursor = conn.cursor()
@@ -106,6 +105,7 @@ def show_login_create_account():
             elif user:
                 st.session_state["logged_in"] = True
                 st.session_state["username"] = username
+                st.session_state["page"] = "home"
                 st.success("✅ Login successful!")
                 st.experimental_rerun()
             else:
@@ -158,3 +158,6 @@ def show_login_create_account():
                         st.error("Failed to send email. Please try again later.")
                 else:
                     st.error("This email is not registered in our system.")
+
+if __name__ == '__main__':
+    show_login_create_account()
