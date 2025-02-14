@@ -4,10 +4,14 @@ import smtplib
 from email.message import EmailMessage
 from database import create_tables
 from theme import apply_dark_theme
-from github_sync import push_db_to_github
+from github_sync import push_db_to_github  # Ensure this function uses st.secrets["general"]["repo"] and st.secrets["general"]["token"]
 
 def send_password_email(recipient_email, username, password):
+    """
+    Sends an email with the user's password using TLS on port 587.
+    """
     try:
+        # Get SMTP configuration from st.secrets.
         smtp_server = st.secrets["smtp"]["server"]
         smtp_port = st.secrets["smtp"]["port"]
         smtp_email = st.secrets["smtp"]["email"]
@@ -37,9 +41,13 @@ def send_password_email(recipient_email, username, password):
         return False
 
 def register_user(fullname, email, phone, username, password):
+    """
+    Registers a new user in the database with approved=0.
+    """
     conn = sqlite3.connect(st.secrets["general"]["db_path"])
     cursor = conn.cursor()
 
+    # Check if the password is already taken.
     cursor.execute("SELECT 1 FROM users WHERE password = ?", (password,))
     if cursor.fetchone() is not None:
         conn.close()
@@ -59,6 +67,11 @@ def register_user(fullname, email, phone, username, password):
     return True
 
 def login_user(username, password):
+    """
+    Validates username/password and checks if the user is approved.
+    Returns the user row if valid and approved, "not_approved" if the user exists but is not approved,
+    or None if credentials are invalid.
+    """
     conn = sqlite3.connect(st.secrets["general"]["db_path"])
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
@@ -72,15 +85,18 @@ def login_user(username, password):
     return user
 
 def show_login_create_account():
+    """
+    Renders the login, create account, and forgot password tabs.
+    """
     apply_dark_theme()
-    create_tables()
+    create_tables()  # Ensure database and tables exist
 
     tabs = st.tabs(["Login", "Create Account", "Forgot Password"])
 
     # ─────────────────────────
     # LOGIN TAB
     with tabs[0]:
-        st.subheader("🔑 Login for Course 1")
+        st.subheader("🔑 Login")
         username = st.text_input("Username", key="login_username")
         password = st.text_input("Password", type="password", key="login_password")
         if st.button("Login"):
@@ -90,7 +106,6 @@ def show_login_create_account():
             elif user:
                 st.session_state["logged_in"] = True
                 st.session_state["username"] = username
-                st.session_state["course"] = "course1"
                 st.success("✅ Login successful!")
                 st.experimental_rerun()
             else:
@@ -99,7 +114,7 @@ def show_login_create_account():
     # ─────────────────────────
     # CREATE ACCOUNT TAB
     with tabs[1]:
-        st.subheader("🆕 Create Account for Course 1")
+        st.subheader("🆕 Create Account")
         reg_fullname = st.text_input("Full Name", key="reg_fullname")
         reg_email = st.text_input("Email", key="reg_email")
         reg_phone = st.text_input("Mobile Number", key="reg_phone")
@@ -123,7 +138,7 @@ def show_login_create_account():
     # ─────────────────────────
     # FORGOT PASSWORD TAB
     with tabs[2]:
-        st.subheader("🔒 Forgot Password for Course 1")
+        st.subheader("🔒 Forgot Password")
         forgot_email = st.text_input("Enter your registered email", key="forgot_email")
         if st.button("Retrieve Password"):
             if not forgot_email:
@@ -143,6 +158,3 @@ def show_login_create_account():
                         st.error("Failed to send email. Please try again later.")
                 else:
                     st.error("This email is not registered in our system.")
-
-if __name__ == '__main__':
-    show_login_create_account()
