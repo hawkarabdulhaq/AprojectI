@@ -1,51 +1,103 @@
 import streamlit as st
 from theme import apply_dark_theme
 from database import create_tables
+from login import show_login_create_account
 from sidebar import show_sidebar
 from home import show_home
-from style import show_footer
+from style import show_footer  # Import the footer function
 
 def main():
+    # Must be the FIRST Streamlit command
     st.set_page_config(page_title="Code for Impact", layout="wide")
+
+    # Apply dark theme and ensure the database/tables exist
     apply_dark_theme()
     create_tables()
 
-    if "page" not in st.session_state:
-        st.session_state["page"] = "offer"
+    # Initialize login state if not already set
+    if "logged_in" not in st.session_state:
+        st.session_state["logged_in"] = False
 
-    if st.session_state.get("logged_in", False):
+    if st.session_state["logged_in"]:
+        # Get the selected page from the sidebar
         selected = show_sidebar()
 
         if selected == "logout":
             st.session_state["logged_in"] = False
             st.session_state["page"] = "offer"
             st.rerun()
+
         elif selected == "home":
             show_home()
+
         # ─────────────────────────────────────────────────────────────────
-        # Extend with additional sections as needed...
+        # Handle Assignments
+        elif selected == "as1":
+            import as1
+            as1.show()
+
+        elif selected == "as2":
+            import as2
+            as2.show()
+
+        elif selected == "as3":
+            import as3
+            as3.show()
+
+        elif selected == "as4":
+            import as4
+            as4.show()
+
+        # ─────────────────────────────────────────────────────────────────
+        # Handle Quizzes
+        elif selected == "quiz1":
+            import quiz1
+            quiz1.show()
+
+        elif selected == "quiz2":
+            import quiz2
+            quiz2.show()
+
+        # ─────────────────────────────────────────────────────────────────
+        # Handle Help (if you have a help.py module)
+        elif selected == "help":
+            import help
+            help.show()
+
+        # ─────────────────────────────────────────────────────────────────
+        # Handle Modules
+        elif selected == "modules_intro":
+            import modules_intro
+            modules_intro.show()
+
+        elif selected == "modules_week1":
+            import modules_week1
+            modules_week1.show()
+
+        elif selected == "modules_week2":
+            import modules_week2
+            modules_week2.show()
+
+        elif selected == "modules_week3":
+            import modules_week3
+            modules_week3.show()
+
+        elif selected == "modules_week4":
+            import modules_week4
+            modules_week4.show()
+
+        elif selected == "modules_week5":
+            import modules_week5
+            modules_week5.show()
+
         else:
             st.warning("Unknown selection.")
-    else:
-        if st.session_state["page"] == "offer":
-            import offer
-            offer.show()
-        elif st.session_state["page"] == "login":
-            import login
-            login.show_login_create_account()
-        elif st.session_state["page"] == "loginx":
-            # Removed loginx.py page; show a temporary message instead.
-            st.warning("Course 2 Login is not available yet.")
-            if st.button("Go Back"):
-                st.session_state["page"] = "offer"
-                st.rerun()
-        elif st.session_state["page"] == "course2_app":
-            from second.appx import appx
-            appx.show()
-        else:
-            import login
-            login.show_login_create_account()
 
+    else:
+        # If not logged in, show login/create account pages
+        show_login_create_account()
+
+    # Add the global footer (this will appear on all pages)
     show_footer()
 
 if __name__ == "__main__":
