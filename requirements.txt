@@ -1,6 +1,4 @@
-
 streamlit
-streamlit-lottie
 requests
 streamlit-option-menu
 streamlit-folium
@@ -15,7 +13,6 @@ beautifulsoup4
 opencv-python-headless
 numpy
 flake8
-python-dotenv
 pytesseract
 scikit-image
 pillow
