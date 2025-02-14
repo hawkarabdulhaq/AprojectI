@@ -8,13 +8,11 @@ folium
 gspread
 IPython
 matplotlib
-seaborn
 beautifulsoup4
 opencv-python-headless
 numpy
 flake8
-pytesseract
-scikit-image
+pytz
 pillow
 urllib3
 lxml
@@ -22,5 +20,3 @@ google-api-python-client
 openpyxl
 plotly
 scipy
-tensorflow
-torch
