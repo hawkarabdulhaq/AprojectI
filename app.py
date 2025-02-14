@@ -15,13 +15,15 @@ def main():
 
     if st.session_state.get("logged_in", False):
         selected = show_sidebar()
+
         if selected == "logout":
             st.session_state["logged_in"] = False
             st.session_state["page"] = "offer"
             st.rerun()
         elif selected == "home":
             show_home()
-        # Add other navigation sections here...
+        # ─────────────────────────────────────────────────────────────────
+        # Extend with additional sections as needed...
         else:
             st.warning("Unknown selection.")
     else:
@@ -32,8 +34,11 @@ def main():
             import login
             login.show_login_create_account()
         elif st.session_state["page"] == "loginx":
-            from second.appx import loginx
-            loginx.show()
+            # Removed loginx.py page; show a temporary message instead.
+            st.warning("Course 2 Login is not available yet.")
+            if st.button("Go Back"):
+                st.session_state["page"] = "offer"
+                st.rerun()
         elif st.session_state["page"] == "course2_app":
             from second.appx import appx
             appx.show()
