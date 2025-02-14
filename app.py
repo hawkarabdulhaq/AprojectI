@@ -92,7 +92,7 @@ def main():
             import login
             login.show_login_create_account()
         elif st.session_state["page"] == "loginx":
-            # Assuming loginx.py is located in second/appx directory and has a show() function
+            # Import loginx from the second/appx package
             from second.appx import loginx
             loginx.show()
         else:
