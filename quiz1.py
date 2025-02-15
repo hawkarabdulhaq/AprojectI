@@ -209,7 +209,8 @@ def show():
             # Assuming the columns in the records table are:
             # username, fullname, as1, as2, as3, as4, quiz1, quiz2, total
             quiz1_score = record[6]  # quiz1 is the 7th column (index 6)
-            if quiz1_score != 0:
+            # Allow if quiz1_score is None or 0, otherwise block resubmission.
+            if quiz1_score is not None and quiz1_score != 0:
                 st.error("❌ You have already submitted the quiz. Resubmission is not allowed.")
                 st.session_state["validated"] = False
             else:
