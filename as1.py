@@ -5,6 +5,7 @@ from geopy.distance import geodesic
 from io import StringIO
 from streamlit_folium import st_folium
 from utils.style1 import set_page_style
+from style import show_footer  # Added this import
 import sqlite3
 from github_sync import push_db_to_github
 from datetime import datetime
@@ -114,7 +115,7 @@ def show():
                 st.markdown("### 📊 DataFrame Output")
                 st.dataframe(st.session_state["dataframe_object"])
 
-        # Submit Code Button - Updated with timestamp and user tracking
+        # Submit Code Button
         submit_button = st.button("Submit Code", key="submit_code_button")
         if submit_button:
             if not st.session_state.get("run_success", False):
@@ -124,10 +125,6 @@ def show():
                     # Grade the submission using your grading function
                     from grades.grade1 import grade_assignment
                     grade = grade_assignment(code_input)
-                    
-                    # Current timestamp and user info
-                    current_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-                    submitted_by = "Hakari-Bibani"  # Current user's login
 
                     # Connect to database
                     conn = sqlite3.connect(db_path)
@@ -151,24 +148,14 @@ def show():
                     if updated_rows == 0:
                         st.error("No record updated. Please check the username or database integrity.")
                     else:
-                        # Show previous grade and submission info
+                        # Show previous grade if it exists
                         if current_grade and current_grade[0] is not None:
-                            st.info(f"""
-                            Previous Grade: {current_grade[0]}/100
-                            """)
+                            st.info(f"Previous grade: {current_grade[0]}/100")
                         
-                        # Show new submission info
-                        st.success(f"""
-                        New Submission Details:
-                        - Grade: {grade}/100
-                        - Submitted at: {current_time}
-                        - Submitted by: {submitted_by}
-                        """)
-
                         # Push changes to GitHub
                         try:
                             push_db_to_github(db_path)
-                            st.success("Successfully synced with GitHub!")
+                            st.success(f"Submission successful! Your new grade: {grade}/100")
                         except Exception as e:
                             st.warning("Grade updated locally but failed to sync with GitHub. Please try again later.")
                             st.error(f"GitHub sync error: {str(e)}")
@@ -182,7 +169,8 @@ def show():
             else:
                 st.error("Please enter your username to submit.")
 
-        show_footer()
+    # Call show_footer() at the end of the function
+    show_footer()
 
 if __name__ == "__main__":
     show()
