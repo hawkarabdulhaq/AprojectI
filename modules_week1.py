@@ -309,8 +309,8 @@ print(f"The average temperature in {city} is {average_temp}°F.")
         )
 
     with tab9:
-        st.header("Assignment: Week 1 – Analyzing Real-Time Earthquake Data")
-        st.markdown('<p style="color: red; font-size: 20px;">📝 Select Assignment 2 from the sidebar in the Assignments section.</p>', unsafe_allow_html=True)
+        import as2  # Import the as2.py module
+        as2.show()  # Call the show function from as2 module
 
     with tab10:
         st.markdown("<h1 style='color:gold;'>1.10 Real-Time Applications of Google Colab</h1>", unsafe_allow_html=True)
