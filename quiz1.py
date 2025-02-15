@@ -182,6 +182,7 @@ def validate_username(username):
         db_path = st.secrets["general"]["db_path"]
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
+        # Retrieve all fields for the given username.
         cursor.execute("SELECT * FROM records WHERE username = ?", (username,))
         record = cursor.fetchone()
         conn.close()
@@ -205,8 +206,10 @@ def show():
     if verify_button and username:
         record = validate_username(username)
         if record:
-            # Check if quiz has already been submitted (i.e. quiz1 column is not empty or non-zero)
-            if record[-1] not in (None, 0, 0.0):  # Assuming quiz1 is the last column
+            # Assuming the columns in the records table are:
+            # username, fullname, as1, as2, as3, as4, quiz1, quiz2, total
+            quiz1_score = record[6]  # quiz1 is the 7th column (index 6)
+            if quiz1_score != 0:
                 st.error("❌ You have already submitted the quiz. Resubmission is not allowed.")
                 st.session_state["validated"] = False
             else:
@@ -268,7 +271,7 @@ def show():
             )
 
         if submit_button:
-            # Prevent resubmission by checking a session flag
+            # Prevent resubmission in the same session
             if st.session_state.get("attempted", False):
                 st.error("❌ You have already submitted the quiz.")
                 return
