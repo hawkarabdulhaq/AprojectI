@@ -67,8 +67,8 @@ def show():
 
 
     with tab3:
-    import quiz2
-    quiz2.show()
+        import quiz2
+        quiz2.show()
 
     with tab4:
         st.header("1.4 What is in the Python Script?")
