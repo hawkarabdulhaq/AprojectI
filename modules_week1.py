@@ -5,16 +5,16 @@ def show():
     # Create 11 tabs (removing undefined tab12 and tab13)
     tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
         "1.1 Introduction to Python",
-        "You made it!",
-        "What is Python?",
-        "Python Script?",
-        "Libraries",
-        "Google Colab",
-        "Assignment 1",
-        "APIs",
-        "Assignment 2",
-        "Real-Time",
-        "Quiz"
+        "1.2 You made it!",
+        "1.3 What is Python?",
+        "1.4 Python Script?",
+        "1.5 Libraries",
+        "1.6 Google Colab",
+        "1.7 Assignment 1",
+        "1.8 APIs",
+        "1.9 Assignment 2",
+        "1.10 Real-Time",
+        "1.11 Quiz"
     ])
 
     with tab1:
