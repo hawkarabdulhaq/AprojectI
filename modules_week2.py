@@ -18,19 +18,13 @@ def show():
     "Assignment 4"
 ])
 
-
     with tab1:
-    # Display the title in pale orange
-    st.markdown("<h1 style='color: #FFD580;'>Welcome to the Scale up Week</h1>", unsafe_allow_html=True)
-
-    # Embed the video using an iframe
-    st.markdown(
-        """
-        <iframe width="1110" height="695" src="https://www.youtube.com/embed/OC1J2uZlLdQ" 
+    st.header("<h1 style='color: #FFD580;'>Welcome to the Scale up Week</h1>", unsafe_allow_html=True)
+    st.video("<iframe width="1110" height="695" src="https://www.youtube.com/embed/OC1J2uZlLdQ" 
         title="December 3, 2024" frameborder="0" allow="accelerometer; autoplay; clipboard-write; 
         encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" 
         allowfullscreen></iframe>
-        """,
+        ",
         unsafe_allow_html=True
     )
 
