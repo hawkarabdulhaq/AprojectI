@@ -34,6 +34,7 @@ def show():
         unsafe_allow_html=True
     )
 
+
     with tab2:
         st.header("1.2 You made it! Be prepared for your final project")
         st.video("https://www.youtube.com/watch?v=fD73oMb4NRg")
