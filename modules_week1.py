@@ -347,8 +347,8 @@ print(f"The average temperature in {city} is {average_temp}°F.")
         )
 
     with tab11:
-        st.header("Quiz: Week 1")
-        st.markdown('<p style="color: red; font-size: 20px;">📝 Select Quiz 1 from the sidebar in the Quizzes section.</p>', unsafe_allow_html=True)
+        import quiz1
+        quiz1.show()
 
 if __name__ == "__main__":
     show()
