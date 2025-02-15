@@ -20,7 +20,7 @@ def show():
 
 
     with tab1:
-        st.header("1.1 Introduction to Python - Recorded Session")
+        st.header("Welcome to the Scale up Week")
         st.video("https://www.youtube.com/watch?v=Scem9sKTtJo")
         st.subheader("**ChatGPT Prompts**")
         st.markdown("[Links to an external site](https://chatgpt.com/share/6733c214-7ac4-8004-92f1-227d11b644ff)")
