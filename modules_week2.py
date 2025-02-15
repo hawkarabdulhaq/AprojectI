@@ -84,85 +84,67 @@ def show():
 
 
 
-    with tab5:
-        st.header("2.4 Merging and Reversing Scripts: Essential Skills for Python")
-        st.video("https://youtu.be/-ty3itUL1Jk")
-
-
     with tab6:
-        st.header("1.6 Top 10 Things to Know in Google Colab as a Beginner")
+        st.header("2.5 Google Colab for Researchers: A Beginner-Friendly Tool for Advanced Insights")
+    
         st.write(
-            "Google Colab is a beginner-friendly, free platform that allows you to write and run Python code in the cloud. "
-            "If you're new to coding or data analysis, here are the top 10 things you should know about Google Colab to get started:"
-        )
+        "Google Colab is a powerful tool for researchers across various fields, offering a free and user-friendly platform for coding, data analysis, and collaboration. Even if you're not familiar with coding, Colab makes advanced computational tasks more accessible. Here's why researchers love Google Colab and how it enhances research credibility:"
+    )
+    
+         st.markdown(
+        """
+**<span style="color: #ADD8E6;">Why Use Google Colab in Research?</span>**
 
-        st.markdown('<p style="color: #ADD8E6;"><strong>1. Free Access to Powerful Computing</strong></p>', unsafe_allow_html=True)
-        st.write(
-            "Google Colab provides free access to powerful hardware like GPUs and TPUs, which are essential for tasks like "
-            "machine learning and data analysis. You can use these resources without needing expensive hardware."
-        )
+- **<span style="color: #FFA07A;">No Installation Needed:</span>**  
+  Google Colab runs entirely in your browser. You don't need to install Python or any additional software, making it incredibly easy to get started.
 
-        st.markdown('<p style="color: #ADD8E6;"><strong>2. No Installation Required</strong></p>', unsafe_allow_html=True)
-        st.write(
-            "With Google Colab, you don’t need to install Python or any software. You can run your code directly in your browser, "
-            "making it easy to start coding from anywhere."
-        )
+- **<span style="color: #FFA07A;">Free Access to Powerful Resources:</span>**  
+  Google Colab provides access to cloud-based computing resources, including free GPUs (graphics processing units). This allows researchers to process large datasets and run complex algorithms without needing expensive hardware.
 
-        st.markdown('<p style="color: #ADD8E6;"><strong>3. Seamless Integration with Google Drive</strong></p>', unsafe_allow_html=True)
-        st.write(
-            "Colab integrates with Google Drive, so you can save your notebooks (files with .ipynb extensions) directly to your Drive. "
-            "This ensures your work is safe, organized, and accessible across devices."
-        )
+- **<span style="color: #FFA07A;">Collaborative Features:</span>**  
+  Similar to Google Docs, multiple researchers can work together in real-time on the same notebook. This fosters teamwork and transparency in research.
 
-        st.markdown('<p style="color: #ADD8E6;"><strong>4. Beginner-Friendly Interface</strong></p>', unsafe_allow_html=True)
-        st.write(
-            "Colab’s interface is straightforward:\n"
-            "- **Code Cells:** Write and run Python code.\n"
-            "- **Text Cells:** Add explanations, instructions, or notes using Markdown.\n\n"
-            "This mix of code and text makes your projects more readable."
-        )
+- **<span style="color: #FFA07A;">Credibility in Research:</span>**  
+  By using Google Colab, you can save and share your code, datasets, and results. This transparency ensures reproducibility—a cornerstone of credible scientific research.
 
-        st.markdown('<p style="color: #ADD8E6;"><strong>5. Built-In Libraries</strong></p>', unsafe_allow_html=True)
-        st.write(
-            "Colab comes pre-installed with popular Python libraries like Pandas, NumPy, and Matplotlib. "
-            "You can start analyzing data or creating visualizations without needing to install these libraries manually."
-        )
+- **<span style="color: #FFA07A;">Wide Support for Libraries and Tools:</span>**  
+  Colab supports popular Python libraries like NumPy, Pandas, and Matplotlib, which are essential for data analysis. It also integrates easily with machine learning and geospatial tools like TensorFlow, Scikit-learn, and Google Earth Engine.
 
-        st.markdown('<p style="color: #ADD8E6;"><strong>6. Collaboration Made Easy</strong></p>', unsafe_allow_html=True)
-        st.write(
-            "Share your Colab notebook with others (just like a Google Doc). Collaborators can view or edit your code in real time, "
-            "making it ideal for group projects or peer reviews."
-        )
+**<span style="color: #ADD8E6;">Benefits for Different Research Areas:</span>**
 
-        st.markdown('<p style="color: #ADD8E6;"><strong>7. Data Integration</strong></p>', unsafe_allow_html=True)
-        st.write(
-            "Easily upload datasets or connect directly to Google Sheets, databases, or APIs. "
-            "This is perfect for beginners working with small to medium-sized datasets."
-        )
+- **<span style="color: #FFA07A;">Geoscience Researchers:</span>**  
+  Use Colab to analyze geological data, visualize seismic waves, or process geospatial information with Google Earth Engine.  
+  *Example: Visualizing land use changes over time with satellite data.*
 
-        st.markdown('<p style="color: #ADD8E6;"><strong>8. Visualization Tools</strong></p>', unsafe_allow_html=True)
-        st.write(
-            "Colab supports interactive visualizations with libraries like Matplotlib, Plotly, and Seaborn. "
-            "You can quickly turn raw data into graphs and charts for better insights."
-        )
+- **<span style="color: #FFA07A;">Medical Researchers:</span>**  
+  Process patient datasets, develop machine learning models for disease prediction, or analyze genetic data with bioinformatics tools.  
+  *Example: Training a machine learning model to detect anomalies in medical imaging.*
 
-        st.markdown('<p style="color: #ADD8E6;"><strong>9. Simple Debugging</strong></p>', unsafe_allow_html=True)
-        st.write(
-            "Colab provides error messages that help you debug your code step by step. "
-            "It’s a great way to learn how Python works and fix common issues as you practice."
-        )
+- **<span style="color: #FFA07A;">Social Science Researchers:</span>**  
+  Analyze survey data, explore public opinion trends, or map demographic information using Colab's visualization tools.  
+  *Example: Creating interactive maps of population density and urban development.*
 
-        st.markdown('<p style="color: #ADD8E6;"><strong>10. Access to Tutorials and Demos</strong></p>', unsafe_allow_html=True)
-        st.write(
-            "Explore Colab’s built-in tutorials and code snippets. These resources guide you through common tasks like creating machine learning models or analyzing datasets, "
-            "even if you’re just starting out."
-        )
+- **<span style="color: #FFA07A;">Environmental Researchers:</span>**  
+  Model climate change patterns, analyze water quality data, or study biodiversity distribution using Colab's Python-based libraries.  
+  *Example: Running a simulation to predict future climate scenarios based on historical data.*
 
-        st.markdown('<p style="color: #ADD8E6;"><strong>Bonus Tip: Keep Practicing!</strong></p>', unsafe_allow_html=True)
-        st.write(
-            "Google Colab is an excellent tool for hands-on learning. Start with small projects, such as analyzing a dataset, creating a simple graph, or automating tasks. "
-            "With consistent practice, you’ll become comfortable coding in no time."
-        )
+- **<span style="color: #FFA07A;">Business and Economic Researchers:</span>**  
+  Conduct statistical analysis, forecast market trends, or visualize financial data.  
+  *Example: Building a predictive model for stock market movements.*
+
+**<span style="color: #ADD8E6;">How Researchers Benefit from Google Colab:</span>**
+
+- **Improved Efficiency:** Automate repetitive tasks like data cleaning and visualization.
+- **Enhanced Credibility:** Share your research notebooks to allow others to replicate your work.
+- **Cost Savings:** Use free resources instead of investing in expensive software or hardware.
+- **Community Support:** Access a wealth of tutorials and community-driven solutions to solve your challenges.
+
+**Conclusion:**  
+Google Colab bridges the gap between researchers and advanced technology, empowering you to tackle complex problems without needing extensive coding expertise. It’s a versatile tool that can significantly enhance the quality and impact of your research, no matter your field of study. Start exploring Google Colab today and elevate your research potential!
+        """,
+        unsafe_allow_html=True
+    )
+
 
     with tab7:
         import as3
