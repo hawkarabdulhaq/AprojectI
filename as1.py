@@ -116,61 +116,71 @@ def show():
                 st.dataframe(st.session_state["dataframe_object"])
 
         # Submit Code Button
-        submit_button = st.button("Submit Code", key="submit_code_button")
-        if submit_button:
-            if not st.session_state.get("run_success", False):
-                st.error("Please run your code successfully before submitting.")
-            elif st.session_state.get("username", ""):
-                try:
-                    # Grade the submission using your grading function
-                    from grades.grade1 import grade_assignment
-                    grade = grade_assignment(code_input)
+submit_button = st.button("Submit Code", key="submit_code_button")
+if submit_button:
+    if not st.session_state.get("run_success", False):
+        st.error("Please run your code successfully before submitting.")
+    elif st.session_state.get("username", ""):
+        try:
+            # Grade the submission using your grading function
+            from grades.grade1 import grade_assignment
+            grade = grade_assignment(code_input)
 
-                    # Connect to database
-                    conn = sqlite3.connect(db_path)
-                    cursor = conn.cursor()
+            # Connect to database
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
 
-                    # Get current grade to show difference
-                    cursor.execute("SELECT as1 FROM records WHERE username = ?", 
-                                 (st.session_state["username"],))
-                    current_grade = cursor.fetchone()
+            try:
+                # First: Get current grade
+                cursor.execute("SELECT as1 FROM records WHERE username = ?", 
+                             (st.session_state["username"],))
+                current_grade = cursor.fetchone()
 
-                    # Update the grade in the records table
-                    cursor.execute("""
-                        UPDATE records 
-                        SET as1 = ? 
-                        WHERE username = ?
-                    """, (grade, st.session_state["username"]))
+                # Second: Perform the update with immediate commit
+                cursor.execute("""
+                    UPDATE records 
+                    SET as1 = ? 
+                    WHERE username = ?
+                """, (grade, st.session_state["username"]))
+                conn.commit()
+
+                # Third: Verify the update
+                cursor.execute("SELECT as1 FROM records WHERE username = ?", 
+                             (st.session_state["username"],))
+                new_grade = cursor.fetchone()
+
+                if new_grade and new_grade[0] == grade:
+                    # Show previous grade if it exists
+                    if current_grade and current_grade[0] is not None:
+                        st.info(f"Previous grade: {current_grade[0]}/100")
                     
-                    conn.commit()
-                    updated_rows = cursor.rowcount
-
-                    if updated_rows == 0:
-                        st.error("No record updated. Please check the username or database integrity.")
-                    else:
-                        # Show previous grade if it exists
-                        if current_grade and current_grade[0] is not None:
-                            st.info(f"Previous grade: {current_grade[0]}/100")
+                    # Push to GitHub only after confirming local update
+                    try:
+                        push_db_to_github(db_path)
+                        st.success(f"Submission successful! Your new grade: {grade}/100")
                         
-                        # Push changes to GitHub
-                        try:
-                            push_db_to_github(db_path)
-                            st.success(f"Submission successful! Your new grade: {grade}/100")
-                        except Exception as e:
-                            st.warning("Grade updated locally but failed to sync with GitHub. Please try again later.")
-                            st.error(f"GitHub sync error: {str(e)}")
+                        # Double-check after GitHub push
+                        cursor.execute("SELECT as1 FROM records WHERE username = ?", 
+                                     (st.session_state["username"],))
+                        final_check = cursor.fetchone()
+                        if final_check and final_check[0] != grade:
+                            st.error("Grade verification failed after GitHub sync. Please contact support.")
+                    except Exception as e:
+                        st.warning("Grade updated locally but failed to sync with GitHub.")
+                        st.error(f"GitHub sync error: {str(e)}")
+                else:
+                    st.error("Failed to update grade in database. Please try again.")
 
-                    conn.close()
+            except sqlite3.Error as e:
+                st.error(f"Database error: {e}")
+                conn.rollback()
 
-                except Exception as e:
-                    st.error(f"An error occurred during submission: {str(e)}")
-                    if 'conn' in locals():
-                        conn.close()
-            else:
-                st.error("Please enter your username to submit.")
+            finally:
+                conn.close()
 
-    # Call show_footer() at the end of the function
-    show_footer()
-
-if __name__ == "__main__":
-    show()
+        except Exception as e:
+            st.error(f"An error occurred during submission: {str(e)}")
+            if 'conn' in locals():
+                conn.close()
+    else:
+        st.error("Please enter your username to submit.")
