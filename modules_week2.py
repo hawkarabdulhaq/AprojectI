@@ -73,10 +73,15 @@ def show():
     with tab4:
         st.header("2.3 Scale up your scripts Recorded Session")
         st.video("https://youtu.be/55VfpKxvp7s")
-        st.markdown(
-        "[Download the PowerPoint presentation](https://github.com/Hakari-Bibani/AprojectI/blob/main/Learning%20Python%20with%20Hawkar%202.pptx)",
-        unsafe_allow_html=True
+        st.markdown("### Presentation:")
+        st.components.v1.html(
+        """
+        <iframe src="https://docs.google.com/presentation/d/1iOFdiLq3Wgpvnz1cjh_sEMSUZ68fngOCa5ShWFLA1OA/embed?start=false&loop=false&delayms=3000" 
+        frameborder="0" width="800" height="600" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+        """,
+        height=600,
     )
+
 
 
     with tab5:
