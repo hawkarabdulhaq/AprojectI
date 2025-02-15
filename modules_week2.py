@@ -18,13 +18,18 @@ def show():
     "Assignment 4"
 ])
 
-    with tab1:
-    st.header("<h1 style='color: #FFD580;'>Welcome to the Scale up Week</h1>", unsafe_allow_html=True)
-    st.video("<iframe width="1110" height="695" src="https://www.youtube.com/embed/OC1J2uZlLdQ" 
-        title="December 3, 2024" frameborder="0" allow="accelerometer; autoplay; clipboard-write; 
-        encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" 
-        allowfullscreen></iframe>")
 
+    with tab1:
+        st.header("1.1 Introduction to Python - Recorded Session")
+        st.video("https://www.youtube.com/watch?v=Scem9sKTtJo")
+        st.subheader("**ChatGPT Prompts**")
+        st.markdown("[Links to an external site](https://chatgpt.com/share/6733c214-7ac4-8004-92f1-227d11b644ff)")
+        st.subheader("**Content**:")
+        st.write(
+            "In this session, we’ll introduce you to the basics of Python and how it can be a powerful tool for enhancing personal impact, "
+            "whether you're looking to automate tasks, analyze data, or create small projects. We will cover foundational topics such as "
+            "setting up your Python environment, understanding Python syntax, and exploring the practical applications of Python in everyday scenarios."
+        )
 
     with tab2:
         st.header("1.2 You made it! Be prepared for your final project")
@@ -69,15 +74,15 @@ def show():
             "Think of a Python script like a recipe in a cookbook, where each line of code is an instruction for completing part of the overall task."
         )
         st.write("**Importing Libraries:** Often, the script starts by importing libraries. Libraries are collections of pre-built code that allow the script to perform specific tasks—like handling data, creating visuals, or connecting to the internet—without needing to write these functions from scratch.")
-        st.write("Example: `import pandas as pd` – this line imports a library for handling data tables.")
+        st.write("Example: import pandas as pd – this line imports a library for handling data tables.")
         st.write("**Defining Variables:** Variables are like labeled containers that store information, such as numbers or text. These containers hold data that might be needed later in the script.")
-        st.write("Example: `temperature = 72` – stores the number 72 in a variable called `temperature`.")
+        st.write("Example: temperature = 72 – stores the number 72 in a variable called temperature.")
         st.write("**Functions and Loops:** Functions are small, reusable chunks of code that perform specific tasks, while loops are instructions that repeat tasks multiple times. They make your code more efficient and reduce repetition.")
-        st.write("Example: `for item in list:` – starts a loop that goes through each item in a list.")
+        st.write("Example: for item in list: – starts a loop that goes through each item in a list.")
         st.write("**Data Processing and Analysis:** Many scripts work with data—cleaning, calculating, or organizing it to prepare for further analysis.")
         st.write("Example: Cleaning data or calculating averages using built-in functions.")
         st.write("**Output and Visualization:** Finally, scripts often display results to the user by printing text, creating charts, or saving files.")
-        st.write("Example: `print(\"The average temperature is:\", average_temp)` displays the result.")
+        st.write("Example: print(\"The average temperature is:\", average_temp) displays the result.")
         st.code(
             """
 # 1. Importing Libraries
