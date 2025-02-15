@@ -350,6 +350,10 @@ print(f"The average temperature in {city} is {average_temp}°F.")
     with tab11:
         import quiz1
         quiz1.show()
+        
+    with tab12:
+        import quiz1
+        quiz1.show()
 
 if __name__ == "__main__":
     show()
