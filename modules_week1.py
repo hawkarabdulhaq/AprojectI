@@ -4,7 +4,7 @@ import pandas as pd
 def show():
     # Create 11 tabs (removing undefined tab12 and tab13)
     tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
-        "Introduction to Python",
+        "1.1 Introduction to Python",
         "You made it!",
         "What is Python?",
         "Python Script?",
