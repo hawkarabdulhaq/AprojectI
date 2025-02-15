@@ -3,7 +3,7 @@ import folium
 import pandas as pd
 from geopy.distance import geodesic
 from io import StringIO
-import sys  # Added this import
+import sys
 from streamlit_folium import st_folium
 from utils.style1 import set_page_style
 from style import show_footer
@@ -11,31 +11,78 @@ import sqlite3
 from github_sync import push_db_to_github
 from datetime import datetime
 
-def verify_and_update_grade(db_path, username, grade):
-    """Helper function to verify and update grade in database"""
+def force_grade_update(db_path, username, grade, timestamp, submitted_by):
+    """Force update the grade in the database with timestamp and submitter info"""
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
+        
+        # Update with timestamp and submitter info
+        cursor.execute("""
+            UPDATE records 
+            SET as1 = ?,
+                last_updated = ?,
+                updated_by = ?
+            WHERE username = ?
+        """, (float(grade), timestamp, submitted_by, username))
+        
+        conn.commit()
+        
+        # Verify update
+        cursor.execute("SELECT as1 FROM records WHERE username = ?", (username,))
+        result = cursor.fetchone()
+        
+        success = result and result[0] == float(grade)
+        conn.close()
+        return success
+    except Exception as e:
+        if 'conn' in locals():
+            conn.close()
+        return False
+
+def verify_and_update_grade(db_path, username, grade, timestamp, submitted_by):
+    """Helper function to verify and update grade in database"""
+    conn = None
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        
+        # Start transaction
+        cursor.execute("BEGIN TRANSACTION")
         
         # Get current grade
         cursor.execute("SELECT as1 FROM records WHERE username = ?", (username,))
         current_grade = cursor.fetchone()
         
-        # Update grade
-        cursor.execute("UPDATE records SET as1 = ? WHERE username = ?", (grade, username))
+        # Update grade with timestamp and submitter
+        cursor.execute("""
+            UPDATE records 
+            SET as1 = ?,
+                last_updated = ?,
+                updated_by = ?
+            WHERE username = ?
+        """, (float(grade), timestamp, submitted_by, username))
+        
+        # Commit the transaction
         conn.commit()
         
-        # Verify update
+        # Verify the update
         cursor.execute("SELECT as1 FROM records WHERE username = ?", (username,))
         new_grade = cursor.fetchone()
         
-        conn.close()
-        return True, current_grade[0] if current_grade else None
-        
+        if new_grade and new_grade[0] == float(grade):
+            return True, current_grade[0] if current_grade else None
+        else:
+            conn.rollback()
+            return False, "Grade verification failed"
+            
     except Exception as e:
-        if 'conn' in locals():
-            conn.close()
+        if conn:
+            conn.rollback()
         return False, str(e)
+    finally:
+        if conn:
+            conn.close()
 
 def show():
     # Apply the custom page style
@@ -151,30 +198,64 @@ def show():
                     from grades.grade1 import grade_assignment
                     grade = grade_assignment(code_input)
                     
-                    # Get current time
+                    # Get current time and user
                     current_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+                    submitted_by = "Hakari-Bibani"  # Current user's login
+
+                    # Debug information before update
+                    conn = sqlite3.connect(db_path)
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT as1 FROM records WHERE username = ?", 
+                                 (st.session_state["username"],))
+                    before_grade = cursor.fetchone()
+                    st.write(f"Current grade in database: {before_grade[0] if before_grade else 'None'}")
+                    conn.close()
 
                     # Update grade and verify
                     success, previous_grade = verify_and_update_grade(
                         db_path, 
                         st.session_state["username"], 
-                        grade
+                        grade,
+                        current_time,
+                        submitted_by
                     )
 
                     if success:
                         # Show previous grade if it exists
                         if previous_grade is not None:
-                            st.info(f"Previous grade: {previous_grade}/100")
+                            st.info(f"""
+                            Previous Submission:
+                            Grade: {previous_grade}/100
+                            """)
 
                         # Push to GitHub
                         try:
                             push_db_to_github(db_path)
-                            st.success(f"Submission successful! Your new grade: {grade}/100")
+                            st.success(f"""
+                            New Submission:
+                            - Grade: {grade}/100
+                            - Submitted at: {current_time}
+                            - Submitted by: {submitted_by}
+                            """)
                         except Exception as e:
                             st.warning("Grade updated locally but failed to sync with GitHub.")
                             st.error(f"GitHub sync error: {str(e)}")
                     else:
-                        st.error(f"Failed to update grade: {previous_grade}")
+                        # Try force update as fallback
+                        if force_grade_update(db_path, st.session_state["username"], grade, current_time, submitted_by):
+                            st.warning("Used fallback method to update grade.")
+                            st.success(f"""
+                            New Submission:
+                            - Grade: {grade}/100
+                            - Submitted at: {current_time}
+                            - Submitted by: {submitted_by}
+                            """)
+                            try:
+                                push_db_to_github(db_path)
+                            except Exception as e:
+                                st.warning("Grade updated locally but failed to sync with GitHub.")
+                        else:
+                            st.error("Failed to update grade even with fallback method.")
 
                 except Exception as e:
                     st.error(f"An error occurred during submission: {str(e)}")
