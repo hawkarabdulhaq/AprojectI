@@ -9,14 +9,12 @@ import sqlite3
 import requests
 import base64
 import time
-import json
 
 def push_db_to_github(db_path: str):
     """
     Push the local SQLite DB file to GitHub.
     This function reads the local file, encodes it, retrieves the current file's SHA (if any),
     and issues a PUT request to update the file on GitHub.
-    Debug information is printed if an error occurs.
     """
     try:
         with open(db_path, "rb") as f:
@@ -30,7 +28,6 @@ def push_db_to_github(db_path: str):
     # Get repo details and token from secrets
     repo = st.secrets["general"]["repo"]  # e.g., "username/reponame"
     token = st.secrets["general"]["token"]
-    # Ensure that db_path here matches the path in your repository (e.g., "mydatabase.db")
     url = f"https://api.github.com/repos/{repo}/contents/{db_path}"
     
     headers = {
@@ -38,7 +35,7 @@ def push_db_to_github(db_path: str):
         "Accept": "application/vnd.github.v3+json"
     }
     
-    # Get the current file info to retrieve the sha (if it exists)
+    # Get current file info to retrieve the sha (if exists)
     get_response = requests.get(url, headers=headers)
     sha = None
     if get_response.status_code == 200:
@@ -56,19 +53,25 @@ def push_db_to_github(db_path: str):
     if sha:
         data["sha"] = sha
 
-    # Log the data being sent (for debugging)
-    st.write("Data payload:", data)
-
     put_response = requests.put(url, json=data, headers=headers)
     if put_response.status_code not in [200, 201]:
         st.error(f"Error pushing DB to GitHub: {put_response.status_code} - {put_response.text}")
     else:
         st.success("Database pushed successfully to GitHub!")
-        st.write("PUT response:", put_response.json())
 
 def show():
     # Apply the custom page style
     set_page_style()
+
+    # (Make sure create_tables() is called only once on startup,
+    #  so that it does not pull from GitHub every time.)
+    if "initialized" not in st.session_state:
+        try:
+            from database import create_tables
+            create_tables()
+            st.session_state["initialized"] = True
+        except Exception as e:
+            st.error(f"Error initializing database: {e}")
 
     # Initialize session state variables if not already set
     if "run_success" not in st.session_state:
@@ -85,12 +88,11 @@ def show():
         st.session_state["username"] = ""
 
     # Define the local database path from secrets.
-    # Ensure this path matches both your local file and your repository file.
     db_path = st.secrets["general"]["db_path"]
 
     st.title("Assignment 1: Mapping Coordinates and Calculating Distances")
 
-    # Step 1: Enter Username
+    # Step 1: Enter Your Username
     st.markdown('<h1 style="color: #ADD8E6;">Step 1: Enter Your Username</h1>', unsafe_allow_html=True)
     username_input = st.text_input("Username", key="as1_username")
     enter_username = st.button("Enter")
@@ -114,7 +116,7 @@ def show():
         with tab1:
             st.markdown("""
             ### Objective
-            Write a Python script to plot three geographical coordinates on a map and calculate distances between them.
+            Write a Python script to plot three coordinates on a map and calculate distances between them.
             """)
             with st.expander("See More"):
                 st.markdown("""
@@ -184,7 +186,7 @@ def show():
                 st.markdown("### 📊 DataFrame Output")
                 st.dataframe(st.session_state["dataframe_object"])
 
-        # Submit Code Button: Update local DB and push changes
+        # Submit Code Button: Update DB and push changes
         submit_button = st.button("Submit Code", key="submit_code_button")
         if submit_button:
             if not st.session_state.get("run_success", False):
@@ -193,6 +195,7 @@ def show():
                 from grades.grade1 import grade_assignment
                 grade = grade_assignment(code_input)
 
+                # Update the grade in the records table for this username
                 conn = sqlite3.connect(db_path)
                 cursor = conn.cursor()
                 cursor.execute("UPDATE records SET as1 = ? WHERE username = ?", (grade, st.session_state["username"]))
@@ -202,6 +205,7 @@ def show():
                 st.info("Grade updated locally. Pushing changes to GitHub...")
                 push_db_to_github(db_path)
 
+                # Verify update by re-querying the DB
                 conn = sqlite3.connect(db_path)
                 cursor = conn.cursor()
                 cursor.execute("SELECT as1 FROM records WHERE username = ?", (st.session_state["username"],))
