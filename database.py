@@ -37,9 +37,9 @@ def create_tables():
         as2 REAL DEFAULT 0,
         as3 REAL DEFAULT 0,
         as4 REAL DEFAULT 0,
-        quiz1 REAL DEFAULT 0,
-        quiz2 REAL DEFAULT 0,
-        total REAL GENERATED ALWAYS AS (as1 + as2 + as3 + as4 + quiz1 + quiz2) STORED
+        quiz1 REAL DEFAULT NULL,
+        quiz2 REAL DEFAULT NULL,
+        total REAL GENERATED ALWAYS AS (as1 + as2 + as3 + as4 + IFNULL(quiz1, 0) + IFNULL(quiz2, 0)) STORED
     )
     ''')
 
