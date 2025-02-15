@@ -4,17 +4,19 @@ import pandas as pd
 def show():
     # Create 11 tabs (removing undefined tab12 and tab13)
     tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
-        "1.1 Introduction to Python",
-        "1.2 You made it!",
-        "1.3 What is Python?",
-        "1.4 Python Script?",
-        "1.5 Libraries",
-        "1.6 Google Colab",
-        "1.7 Assignment 1",
-        "1.8 APIs",
-        "1.9 Assignment 2",
-        "1.10 Real-Time",
-        "1.11 Quiz"
+        "the Scale up Week",
+        "2.1 Breaking Down Scripts!",
+        "2.2 Quiz",
+        "2.3 Scale up scripts",
+        "2.4 Merging & Reversing",
+        "2.5 G.C for Researchers",
+        "2.6 Case Study",
+        "2.7 Limitations of G.C",
+        "2.8 Google Sheets API",
+        "2.9 GitHub for webapp",
+        "Assignment 3"
+        "Assignment 4"
+        
     ])
 
     with tab1:
