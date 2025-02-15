@@ -5,16 +5,42 @@ from geopy.distance import geodesic
 from io import StringIO
 from streamlit_folium import st_folium
 from utils.style1 import set_page_style
-from style import show_footer  # Added this import
+from style import show_footer
 import sqlite3
 from github_sync import push_db_to_github
-from datetime import datetime
+from datetime import datetime, timezone
+
+def verify_and_update_grade(db_path, username, grade):
+    """Helper function to verify and update grade in database"""
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        
+        # Get current grade
+        cursor.execute("SELECT as1 FROM records WHERE username = ?", (username,))
+        current_grade = cursor.fetchone()
+        
+        # Update grade
+        cursor.execute("UPDATE records SET as1 = ? WHERE username = ?", (grade, username))
+        conn.commit()
+        
+        # Verify update
+        cursor.execute("SELECT as1 FROM records WHERE username = ?", (username,))
+        new_grade = cursor.fetchone()
+        
+        conn.close()
+        return True, current_grade[0] if current_grade else None
+        
+    except Exception as e:
+        if 'conn' in locals():
+            conn.close()
+        return False, str(e)
 
 def show():
     # Apply the custom page style
     set_page_style()
 
-    # Initialize session state variables if not already set
+    # Initialize session state variables
     if "run_success" not in st.session_state:
         st.session_state["run_success"] = False
     if "map_object" not in st.session_state:
@@ -39,6 +65,7 @@ def show():
     st.markdown('<h1 style="color: #ADD8E6;">Step 1: Enter Your Username</h1>', unsafe_allow_html=True)
     username_input = st.text_input("Username", key="as1_username")
     enter_username = st.button("Enter")
+    
     if enter_username and username_input:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -54,8 +81,7 @@ def show():
             st.session_state["username_entered"] = False
 
     if st.session_state.get("username_entered", False):
-        # [Previous assignment details code remains unchanged]
-        # ... [Include your existing assignment details and tabs code here]
+        # [Your existing assignment details and tabs code here]
 
         # ──────────────────────────────────────────────────────────────
         # Step 3: Run and Submit Your Code
@@ -70,9 +96,6 @@ def show():
             st.session_state["run_success"] = False
             st.session_state["captured_output"] = ""
             try:
-                from io import StringIO
-                import sys
-
                 captured_output = StringIO()
                 sys.stdout = captured_output
 
@@ -86,13 +109,12 @@ def show():
                 # Capture printed output
                 st.session_state["captured_output"] = captured_output.getvalue()
 
-                # Look for specific outputs (folium.Map, pandas.DataFrame)
+                # Look for specific outputs
                 map_object = next((obj for obj in local_context.values() if isinstance(obj, folium.Map)), None)
                 dataframe_object = next((obj for obj in local_context.values() if isinstance(obj, pd.DataFrame)), None)
 
                 st.session_state["map_object"] = map_object
                 st.session_state["dataframe_object"] = dataframe_object
-
                 st.session_state["run_success"] = True
 
             except Exception as e:
@@ -100,6 +122,7 @@ def show():
                 st.error(f"An error occurred while running your code: {e}")
 
         if st.session_state["run_success"]:
+            # Display outputs
             st.markdown('<h3 style="color: white;">📄 Captured Output</h3>', unsafe_allow_html=True)
             if st.session_state["captured_output"]:
                 formatted_output = st.session_state["captured_output"].replace('\n', '<br>')
@@ -116,71 +139,57 @@ def show():
                 st.dataframe(st.session_state["dataframe_object"])
 
         # Submit Code Button
-            submit_button = st.button("Submit Code", key="submit_code_button")
-            if submit_button:
+        submit_button = st.button("Submit Code", key="submit_code_button")
+        if submit_button:
             if not st.session_state.get("run_success", False):
-        st.error("Please run your code successfully before submitting.")
+                st.error("Please run your code successfully before submitting.")
             elif st.session_state.get("username", ""):
-        try:
-            # Grade the submission using your grading function
-            from grades.grade1 import grade_assignment
-            grade = grade_assignment(code_input)
-
-            # Connect to database
-            conn = sqlite3.connect(db_path)
-            cursor = conn.cursor()
-
-            try:
-                # First: Get current grade
-                cursor.execute("SELECT as1 FROM records WHERE username = ?", 
-                             (st.session_state["username"],))
-                current_grade = cursor.fetchone()
-
-                # Second: Perform the update with immediate commit
-                cursor.execute("""
-                    UPDATE records 
-                    SET as1 = ? 
-                    WHERE username = ?
-                """, (grade, st.session_state["username"]))
-                conn.commit()
-
-                # Third: Verify the update
-                cursor.execute("SELECT as1 FROM records WHERE username = ?", 
-                             (st.session_state["username"],))
-                new_grade = cursor.fetchone()
-
-                if new_grade and new_grade[0] == grade:
-                    # Show previous grade if it exists
-                    if current_grade and current_grade[0] is not None:
-                        st.info(f"Previous grade: {current_grade[0]}/100")
+                try:
+                    # Grade the submission
+                    from grades.grade1 import grade_assignment
+                    grade = grade_assignment(code_input)
                     
-                    # Push to GitHub only after confirming local update
-                    try:
-                        push_db_to_github(db_path)
-                        st.success(f"Submission successful! Your new grade: {grade}/100")
-                        
-                        # Double-check after GitHub push
-                        cursor.execute("SELECT as1 FROM records WHERE username = ?", 
-                                     (st.session_state["username"],))
-                        final_check = cursor.fetchone()
-                        if final_check and final_check[0] != grade:
-                            st.error("Grade verification failed after GitHub sync. Please contact support.")
-                    except Exception as e:
-                        st.warning("Grade updated locally but failed to sync with GitHub.")
-                        st.error(f"GitHub sync error: {str(e)}")
-                else:
-                    st.error("Failed to update grade in database. Please try again.")
+                    # Get current UTC time
+                    current_time = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+                    submitted_by = "Hakari-Bibani"
 
-            except sqlite3.Error as e:
-                st.error(f"Database error: {e}")
-                conn.rollback()
+                    # Update grade and verify
+                    success, previous_grade = verify_and_update_grade(
+                        db_path, 
+                        st.session_state["username"], 
+                        grade
+                    )
 
-            finally:
-                conn.close()
+                    if success:
+                        # Show previous grade if it exists
+                        if previous_grade is not None:
+                            st.info(f"""
+                            Previous Submission:
+                            Grade: {previous_grade}/100
+                            """)
 
-        except Exception as e:
-            st.error(f"An error occurred during submission: {str(e)}")
-            if 'conn' in locals():
-                conn.close()
-    else:
-        st.error("Please enter your username to submit.")
+                        # Push to GitHub
+                        try:
+                            push_db_to_github(db_path)
+                            st.success(f"""
+                            New Submission:
+                            - Grade: {grade}/100
+                            - Submission Time (UTC): {current_time}
+                            - Submitted by: {submitted_by}
+                            """)
+                        except Exception as e:
+                            st.warning("Grade updated locally but failed to sync with GitHub.")
+                            st.error(f"GitHub sync error: {str(e)}")
+                    else:
+                        st.error(f"Failed to update grade: {previous_grade}")
+
+                except Exception as e:
+                    st.error(f"An error occurred during submission: {str(e)}")
+
+            else:
+                st.error("Please enter your username to submit.")
+
+    show_footer()
+
+if __name__ == "__main__":
+    show()
