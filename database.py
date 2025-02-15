@@ -5,7 +5,7 @@ import os
 def create_tables():
     db_path = st.secrets["general"]["db_path"]
 
-    # Only pull from GitHub if the local database file does not exist
+    # Only pull from GitHub if the local database file does not exist.
     if not os.path.exists(db_path):
         try:
             from github_sync import pull_db_from_github
