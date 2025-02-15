@@ -5,7 +5,7 @@ import sqlite3
 from github_sync import push_db_to_github  # Assuming this is used to sync the database
 
 def show():
-    st.title("Assignment 2: Earthquake Data Analysis")
+    st.title("Assignment 2: Analyzing Real-Time Earthquake Data")
 
     # Step 1: Validate Username
     st.markdown('<h1 style="color: #ADD8E6;">Step 1: Enter Your Username</h1>', unsafe_allow_html=True)
