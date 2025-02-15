@@ -258,7 +258,7 @@ print(f"The average temperature in {city} is {average_temp}°F.")
         )
 
     with tab7:
-        import as1
+        import as3
         as1.show()
 
     with tab8:
@@ -302,7 +302,7 @@ print(f"The average temperature in {city} is {average_temp}°F.")
         )
 
     with tab9:
-        import as2
+        import as4
         as2.show()
 
     with tab10:
@@ -340,11 +340,11 @@ print(f"The average temperature in {city} is {average_temp}°F.")
         )
 
     with tab11:
-        import quiz1
+        import quiz2
         quiz1.show()
         
     with tab12:
-        import quiz1
+        import quiz3
         quiz1.show()
 
 if __name__ == "__main__":
