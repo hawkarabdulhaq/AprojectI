@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 
 def show():
-    # Create 11 tabs (removing undefined tab12 and tab13)
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12  = st.tabs([
+    # Create 12 tabs with proper comma separation between each tab name.
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12 = st.tabs([
         "the Scale up Week",
         "2.1 Breaking Down Scripts!",
         "2.2 Quiz",
@@ -14,7 +14,7 @@ def show():
         "2.7 Limitations of G.C",
         "2.8 Google Sheets API",
         "2.9 GitHub for webapp",
-        "Assignment 3"
+        "Assignment 3",
         "Assignment 4"
     ])
 
@@ -267,7 +267,6 @@ print(f"The average temperature in {city} is {average_temp}°F.")
     with tab7:
         import as1
         as1.show()
-
 
     with tab8:
         st.header("1.8 Understanding APIs: The Key to Real-Time Data Integration")
