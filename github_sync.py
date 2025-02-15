@@ -1,40 +1,34 @@
-import requests
+from github import Github
 import base64
 import streamlit as st
 
-def push_db_to_github(db_file: str):
-    repo = st.secrets["general"]["repo"]
+def push_db_with_pygithub(db_file: str):
     token = st.secrets["general"]["token"]
-    branch = "main"  # Adjust if your default branch is different
-    file_path = db_file  # Ensure this path matches your repo structure
-    api_url = f"https://api.github.com/repos/{repo}/contents/{file_path}"
+    repo_name = st.secrets["general"]["repo"]
+    branch = "main"  # or your branch name
 
+    g = Github(token)
+    repo = g.get_repo(repo_name)
+    
     with open(db_file, "rb") as f:
         content = f.read()
     encoded_content = base64.b64encode(content).decode("utf-8")
-
-    # Get the current file's SHA (if it exists)
-    headers = {"Authorization": f"token {token}"}
-    get_response = requests.get(api_url, headers=headers)
-    if get_response.status_code == 200:
-        sha = get_response.json().get("sha")
-    else:
-        sha = None
-
-    commit_message = "Update grade in database"
-    data = {
-        "message": commit_message,
-        "content": encoded_content,
-        "branch": branch,
-    }
-    if sha:
-        data["sha"] = sha
-
-    put_response = requests.put(api_url, headers=headers, json=data)
-    if put_response.status_code in [200, 201]:
-        st.success("Database successfully updated on GitHub!")
-        return {"success": True}
-    else:
-        error_info = put_response.json()
-        st.error(f"Error updating database on GitHub: {error_info}")
-        return {"success": False, "error": error_info}
+    
+    try:
+        file_content = repo.get_contents(db_file, ref=branch)
+        repo.update_file(
+            path=db_file,
+            message="Update grade in database",
+            content=encoded_content,
+            sha=file_content.sha,
+            branch=branch
+        )
+    except Exception as e:
+        # If file doesn't exist, create it
+        repo.create_file(
+            path=db_file,
+            message="Create database file",
+            content=encoded_content,
+            branch=branch
+        )
+    st.success("Database file updated on GitHub using PyGithub!")
