@@ -3,12 +3,13 @@ import folium
 import pandas as pd
 from geopy.distance import geodesic
 from io import StringIO
+import sys  # Added this import
 from streamlit_folium import st_folium
 from utils.style1 import set_page_style
 from style import show_footer
 import sqlite3
 from github_sync import push_db_to_github
-from datetime import datetime, timezone
+from datetime import datetime
 
 def verify_and_update_grade(db_path, username, grade):
     """Helper function to verify and update grade in database"""
@@ -97,6 +98,7 @@ def show():
             st.session_state["captured_output"] = ""
             try:
                 captured_output = StringIO()
+                original_stdout = sys.stdout
                 sys.stdout = captured_output
 
                 # Execute the user's code in a controlled environment
@@ -104,7 +106,7 @@ def show():
                 exec(code_input, {}, local_context)
 
                 # Restore stdout
-                sys.stdout = sys.__stdout__
+                sys.stdout = original_stdout
 
                 # Capture printed output
                 st.session_state["captured_output"] = captured_output.getvalue()
@@ -118,7 +120,7 @@ def show():
                 st.session_state["run_success"] = True
 
             except Exception as e:
-                sys.stdout = sys.__stdout__
+                sys.stdout = original_stdout
                 st.error(f"An error occurred while running your code: {e}")
 
         if st.session_state["run_success"]:
@@ -149,9 +151,8 @@ def show():
                     from grades.grade1 import grade_assignment
                     grade = grade_assignment(code_input)
                     
-                    # Get current UTC time
-                    current_time = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
-                    submitted_by = "Hakari-Bibani"
+                    # Get current time
+                    current_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
                     # Update grade and verify
                     success, previous_grade = verify_and_update_grade(
@@ -163,20 +164,12 @@ def show():
                     if success:
                         # Show previous grade if it exists
                         if previous_grade is not None:
-                            st.info(f"""
-                            Previous Submission:
-                            Grade: {previous_grade}/100
-                            """)
+                            st.info(f"Previous grade: {previous_grade}/100")
 
                         # Push to GitHub
                         try:
                             push_db_to_github(db_path)
-                            st.success(f"""
-                            New Submission:
-                            - Grade: {grade}/100
-                            - Submission Time (UTC): {current_time}
-                            - Submitted by: {submitted_by}
-                            """)
+                            st.success(f"Submission successful! Your new grade: {grade}/100")
                         except Exception as e:
                             st.warning("Grade updated locally but failed to sync with GitHub.")
                             st.error(f"GitHub sync error: {str(e)}")
