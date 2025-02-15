@@ -116,11 +116,11 @@ def show():
                 st.dataframe(st.session_state["dataframe_object"])
 
         # Submit Code Button
-submit_button = st.button("Submit Code", key="submit_code_button")
-if submit_button:
-    if not st.session_state.get("run_success", False):
+            submit_button = st.button("Submit Code", key="submit_code_button")
+            if submit_button:
+            if not st.session_state.get("run_success", False):
         st.error("Please run your code successfully before submitting.")
-    elif st.session_state.get("username", ""):
+            elif st.session_state.get("username", ""):
         try:
             # Grade the submission using your grading function
             from grades.grade1 import grade_assignment
