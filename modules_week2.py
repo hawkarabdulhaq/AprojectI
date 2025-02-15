@@ -4,34 +4,33 @@ import pandas as pd
 def show():
     # Create 12 tabs with proper comma separation between each tab name.
     tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12 = st.tabs([
-        "the Scale up Week",
-        "2.1 Breaking Down Scripts!",
-        "2.2 Quiz",
-        "2.3 Scale up scripts",
-        "2.4 Merging & Reversing",
-        "2.5 G.C for Researchers",
-        "2.6 Case Study",
-        "2.7 Limitations of G.C",
-        "2.8 Google Sheets API",
-        "2.9 GitHub for webapp",
-        "Assignment 3",
-        "Assignment 4"
-    ])
+    "the Scale up Week",
+    "2.1 Breaking Down Scripts!",
+    "2.2 Quiz",
+    "2.3 Scale up scripts",
+    "2.4 Merging & Reversing",
+    "2.5 G.C for Researchers",
+    "2.6 Case Study",
+    "2.7 Limitations of G.C",
+    "2.8 Google Sheets API",
+    "2.9 GitHub for webapp",
+    "Assignment 3",
+    "Assignment 4"
+])
 
-    # Tab 1
+
     with tab1:
         st.header("Welcome to the Scale up Week")
         st.video("https://youtu.be/OC1J2uZlLdQ")
         
-    # Tab 2: Breaking Down Long Scripts and Using Google Drive with Google Colab
     with tab2:
         st.header("2.1 Breaking Down Long Scripts and Using Google Drive with Google Colab")
     
         st.subheader("Purpose:")
         st.write(
-            "Splitting long scripts into smaller, modular scripts improves code readability, reusability, and debugging efficiency. "
-            "Google Drive acts as cloud storage for these scripts, making them accessible across devices and enabling integration with Google Colab for seamless execution."
-        )
+        "Splitting long scripts into smaller, modular scripts improves code readability, reusability, and debugging efficiency. "
+        "Google Drive acts as cloud storage for these scripts, making them accessible across devices and enabling integration with Google Colab for seamless execution."
+    )
     
         st.video("https://youtu.be/d79b7IFY6dM")
     
@@ -39,7 +38,7 @@ def show():
     
         st.subheader("Steps:")
         st.markdown(
-            """
+        """
 **<span style="color: #ADD8E6;">Break Down the Script:</span>**
 - Identify distinct functionalities within the script (e.g., data processing, plotting, utilities).
 - Save each functionality as a separate Python file (.py) with a clear, descriptive name.
@@ -62,42 +61,36 @@ def show():
 - **Cloud Access:** Store scripts in Google Drive for persistent and cross-device availability.
 - **Collaboration:** Allows multiple contributors to work on different parts of the code simultaneously.
 - **Efficiency:** Faster updates and testing of specific functionalities without running the entire script.
-            """,
-            unsafe_allow_html=True
-        )
+        """,
+        unsafe_allow_html=True
+    )
 
-    # Tab 3: Quiz (from quiz2.py)
+
     with tab3:
         import quiz2
         quiz2.show()
 
-    # Tab 4: Scale up your scripts Recorded Session
     with tab4:
         st.header("2.3 Scale up your scripts Recorded Session")
         st.video("https://youtu.be/55VfpKxvp7s")
         st.markdown("### Presentation:")
         st.components.v1.html(
-            """
-            <iframe src="https://docs.google.com/presentation/d/1iOFdiLq3Wgpvnz1cjh_sEMSUZ68fngOCa5ShWFLA1OA/embed?start=false&loop=false&delayms=3000" 
-            frameborder="0" width="800" height="600" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
-            """,
-            height=600,
-        )
+        """
+        <iframe src="https://docs.google.com/presentation/d/1iOFdiLq3Wgpvnz1cjh_sEMSUZ68fngOCa5ShWFLA1OA/embed?start=false&loop=false&delayms=3000" 
+        frameborder="0" width="800" height="600" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+        """,
+        height=600,
+    )
 
-    # Tab 5: Merging and Reversing Scripts: Essential Skills for Python
-    with tab5:
-        st.header("2.4 Merging and Reversing Scripts: Essential Skills for Python")
-        st.video("https://youtu.be/-ty3itUL1Jk")
-        
-    # Tab 6: Google Colab for Researchers
+
     with tab6:
         st.header("2.5 Google Colab for Researchers: A Beginner-Friendly Tool for Advanced Insights")
         st.write(
-            "Google Colab is a powerful tool for researchers across various fields, offering a free and user-friendly platform for coding, data analysis, and collaboration. Even if you're not familiar with coding, Colab makes advanced computational tasks more accessible. Here's why researchers love Google Colab and how it enhances research credibility:"
-        )
+        "Google Colab is a powerful tool for researchers across various fields, offering a free and user-friendly platform for coding, data analysis, and collaboration. Even if you're not familiar with coding, Colab makes advanced computational tasks more accessible. Here's why researchers love Google Colab and how it enhances research credibility:"
+    )
     
         st.markdown(
-            """
+        """
 **<span style="color: #ADD8E6;">Why Use Google Colab in Research?</span>**
 
 - **<span style="color: #FFA07A;">No Installation Needed:</span>**  
@@ -146,16 +139,16 @@ def show():
 
 **Conclusion:**  
 Google Colab bridges the gap between researchers and advanced technology, empowering you to tackle complex problems without needing extensive coding expertise. It’s a versatile tool that can significantly enhance the quality and impact of your research, no matter your field of study. Start exploring Google Colab today and elevate your research potential!
-            """,
-            unsafe_allow_html=True
-        )
+        """,
+        unsafe_allow_html=True
+    )
 
-    # Tab 7
+
+
     with tab7:
         import as3
         as1.show()
 
-    # Tab 8
     with tab8:
         st.header("1.8 Understanding APIs: The Key to Real-Time Data Integration")
         st.markdown("<h3 style='color: goldenrod;'>What is an API?</h3>", unsafe_allow_html=True)
@@ -196,12 +189,10 @@ Google Colab bridges the gap between researchers and advanced technology, empowe
             "or integrated into research dashboards."
         )
 
-    # Tab 9
     with tab9:
         import as4
         as2.show()
 
-    # Tab 10
     with tab10:
         st.markdown("<h1 style='color:gold;'>1.10 Real-Time Applications of Google Colab</h1>", unsafe_allow_html=True)
         st.write(
@@ -236,12 +227,10 @@ Google Colab bridges the gap between researchers and advanced technology, empowe
             "Its real-time capabilities and collaborative features make it a valuable asset for tackling complex challenges and exploring innovative solutions."
         )
 
-    # Tab 11
     with tab11:
         import quiz2
         quiz1.show()
         
-    # Tab 12
     with tab12:
         import quiz3
         quiz1.show()
