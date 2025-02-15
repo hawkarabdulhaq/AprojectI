@@ -309,8 +309,8 @@ print(f"The average temperature in {city} is {average_temp}°F.")
         )
 
     with tab9:
-        import as2  # Import the as2.py module
-        as2.show()  # Call the show function from as2 module
+        import as2
+        as2.show()
 
     with tab10:
         st.markdown("<h1 style='color:gold;'>1.10 Real-Time Applications of Google Colab</h1>", unsafe_allow_html=True)
