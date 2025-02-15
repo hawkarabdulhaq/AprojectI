@@ -24,20 +24,20 @@ def show():
         st.video("https://youtu.be/OC1J2uZlLdQ")
         
     with tab2:
-    st.header("2.1 Breaking Down Long Scripts and Using Google Drive with Google Colab")
+        st.header("2.1 Breaking Down Long Scripts and Using Google Drive with Google Colab")
     
-    st.subheader("Purpose:")
-    st.write(
+        st.subheader("Purpose:")
+        st.write(
         "Splitting long scripts into smaller, modular scripts improves code readability, reusability, and debugging efficiency. "
         "Google Drive acts as cloud storage for these scripts, making them accessible across devices and enabling integration with Google Colab for seamless execution."
     )
     
-    st.video("https://youtu.be/d79b7IFY6dM")
+        st.video("https://youtu.be/d79b7IFY6dM")
     
-    st.image("https://github.com/Hakari-Bibani/AprojectI/blob/main/workflow.png")
+        st.image("https://github.com/Hakari-Bibani/AprojectI/blob/main/workflow.png")
     
-    st.subheader("Steps:")
-    st.markdown(
+        st.subheader("Steps:")
+        st.markdown(
         """
 **<span style="color: #ADD8E6;">Break Down the Script:</span>**
 - Identify distinct functionalities within the script (e.g., data processing, plotting, utilities).
