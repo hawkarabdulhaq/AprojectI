@@ -6,6 +6,7 @@ from io import StringIO
 from streamlit_folium import st_folium
 from utils.style1 import set_page_style
 import sqlite3
+import time
 from github_sync import push_db_to_github  # , pull_db_from_github  # Uncomment if needed
 
 def show():
@@ -214,6 +215,9 @@ def show():
                 cursor.execute("UPDATE records SET as1 = ? WHERE username = ?", (grade, st.session_state["username"]))
                 conn.commit()
                 conn.close()
+
+                # Wait briefly to ensure the file system fully writes the changes
+                time.sleep(1)
 
                 st.info("Grade updated locally. Pushing changes to GitHub...")
                 push_db_to_github(db_path)
