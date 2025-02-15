@@ -210,20 +210,25 @@ def show():
                     st.error("No record updated. Please check the username or database integrity.")
                 else:
                     st.info("Grade updated locally. Pushing changes to GitHub...")
+                    
+                    # Attempt to push the updated DB to GitHub
                     try:
-                        push_db_to_github(db_path)
-                        # Re-open connection to verify the updated grade
-                        conn = sqlite3.connect(db_path)
-                        cursor = conn.cursor()
-                        cursor.execute("SELECT as1 FROM records WHERE username = ?", (st.session_state["username"],))
-                        result = cursor.fetchone()
-                        conn.close()
+                        response = push_db_to_github(db_path)
+                        if response.get("success"):
+                            # Re-open connection to verify the updated grade
+                            conn = sqlite3.connect(db_path)
+                            cursor = conn.cursor()
+                            cursor.execute("SELECT as1 FROM records WHERE username = ?", (st.session_state["username"],))
+                            result = cursor.fetchone()
+                            conn.close()
 
-                        if result:
-                            new_grade = result[0]
-                            st.success(f"Submission successful! Your grade: {new_grade}/100")
+                            if result:
+                                new_grade = result[0]
+                                st.success(f"Submission successful! Your grade: {new_grade}/100")
+                            else:
+                                st.error("Error retrieving the updated grade after push.")
                         else:
-                            st.error("Error retrieving the updated grade.")
+                            st.error(f"GitHub push failed: {response.get('error')}")
                     except Exception as e:
                         st.error(f"GitHub sync error: {str(e)}")
                 
