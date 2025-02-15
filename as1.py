@@ -6,6 +6,49 @@ from io import StringIO
 from streamlit_folium import st_folium
 from utils.style1 import set_page_style
 import sqlite3
+import requests
+import base64
+import time
+
+# Inline push function (replaces github_sync.push_db_to_github)
+def push_db_to_github(db_path: str):
+    """
+    Push the local SQLite DB file to GitHub, overwriting the existing file.
+    This function uses the GitHub API to update the file.
+    """
+    # Read the local database file content
+    with open(db_path, "rb") as f:
+        content = f.read()
+    encoded_content = base64.b64encode(content).decode("utf-8")
+    
+    # Get repo and token from secrets
+    repo = st.secrets["general"]["repo"]
+    token = st.secrets["general"]["token"]
+    url = f"https://api.github.com/repos/{repo}/contents/{db_path}"
+    headers = {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    
+    # Get current file info to retrieve the sha (if file exists)
+    get_response = requests.get(url, headers=headers)
+    sha = None
+    if get_response.status_code == 200:
+        sha = get_response.json().get("sha")
+    
+    # Prepare commit data with a unique commit message (using timestamp)
+    data = {
+        "message": f"Update {db_path} at {time.time()}",
+        "content": encoded_content
+    }
+    if sha:
+        data["sha"] = sha
+
+    put_response = requests.put(url, json=data, headers=headers)
+    if put_response.status_code not in [200, 201]:
+        st.error(f"Error pushing DB to GitHub: {put_response.json()}")
+    else:
+        st.success("Database pushed successfully to GitHub!")
 
 def show():
     # Apply the custom page style
@@ -25,7 +68,7 @@ def show():
     if "username" not in st.session_state:
         st.session_state["username"] = ""
 
-    # Define the database path from secrets (ensure this points to your local database file)
+    # Define the local database path from secrets
     db_path = st.secrets["general"]["db_path"]
 
     st.title("Assignment 1: Mapping Coordinates and Calculating Distances")
@@ -141,7 +184,7 @@ def show():
                 st.dataframe(st.session_state["dataframe_object"])
 
         # ──────────────────────────────────────────────────────────────
-        # Submit Code Button (updates grade in the local DB)
+        # Submit Code Button (updates grade in the local DB and pushes the new version)
         # ──────────────────────────────────────────────────────────────
         submit_button = st.button("Submit Code", key="submit_code_button")
         if submit_button:
@@ -152,14 +195,17 @@ def show():
                 from grades.grade1 import grade_assignment
                 grade = grade_assignment(code_input)
 
-                # Update the grade in the records table for this username
+                # Update the grade in the records table for this username locally
                 conn = sqlite3.connect(db_path)
                 cursor = conn.cursor()
                 cursor.execute("UPDATE records SET as1 = ? WHERE username = ?", (grade, st.session_state["username"]))
                 conn.commit()
                 conn.close()
 
-                st.info("Grade updated locally.")
+                st.info("Grade updated locally. Pushing changes to GitHub...")
+
+                # Push the updated database file to GitHub
+                push_db_to_github(db_path)
 
                 # Re-open connection to verify the updated grade
                 conn = sqlite3.connect(db_path)
