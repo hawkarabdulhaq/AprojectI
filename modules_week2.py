@@ -23,10 +23,7 @@ def show():
     st.video("<iframe width="1110" height="695" src="https://www.youtube.com/embed/OC1J2uZlLdQ" 
         title="December 3, 2024" frameborder="0" allow="accelerometer; autoplay; clipboard-write; 
         encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" 
-        allowfullscreen></iframe>
-        ",
-        unsafe_allow_html=True
-    )
+        allowfullscreen></iframe>")
 
 
     with tab2:
