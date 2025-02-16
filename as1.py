@@ -32,7 +32,7 @@ def show():
     st.title("Assignment 1: Mapping Coordinates and Calculating Distances")
 
     # ──────────────────────────────────────────────────────────────
-    # Step 2: Review Assignment Details (ALWAYS SHOWN)
+    # Step 2: Review Assignment Details (ALWAYS SHOW)
     # ──────────────────────────────────────────────────────────────
     st.markdown('<h1 style="color: #ADD8E6;">Step 2: Review Assignment Details</h1>', unsafe_allow_html=True)
     tab1, tab2 = st.tabs(["Assignment Details", "Grading Details"])
@@ -40,9 +40,7 @@ def show():
     with tab1:
         st.markdown("""
         ### Objective
-        In this assignment, you will write a Python script to plot three geographical coordinates on a map
-        and calculate the distance between each pair of points in kilometers. This will help you practice
-        working with geospatial data and Python libraries for mapping and calculations.
+        In this assignment, you will write a Python script to plot three geographical coordinates on a map and calculate the distance between each pair of points in kilometers. This will help you practice working with geospatial data and Python libraries for mapping and calculations.
         
         **Assignment: Week 1 – Mapping Coordinates and Calculating Distances in Python**
         """)
@@ -108,7 +106,7 @@ def show():
             """)
 
     # ──────────────────────────────────────────────────────────────
-    # Step 1: Enter Your Username (login check)
+    # Step 1: Enter Your Username
     # ──────────────────────────────────────────────────────────────
     st.markdown('<h1 style="color: #ADD8E6;">Step 1: Enter Your Username</h1>', unsafe_allow_html=True)
     username_input = st.text_input("Username", key="as1_username")
@@ -129,7 +127,7 @@ def show():
             st.session_state["username_entered"] = False
 
     # ──────────────────────────────────────────────────────────────
-    # Step 3: Run and Submit Your Code (only if logged in)
+    # Step 3: Run and Submit Your Code (only if user is logged in)
     # ──────────────────────────────────────────────────────────────
     if st.session_state.get("username_entered", False):
         st.markdown('<h1 style="color: #ADD8E6;">Step 3: Run and Submit Your Code</h1>', unsafe_allow_html=True)
@@ -175,7 +173,10 @@ def show():
             st.markdown('<h3 style="color: white;">📄 Captured Output</h3>', unsafe_allow_html=True)
             if st.session_state["captured_output"]:
                 formatted_output = st.session_state["captured_output"].replace('\n', '<br>')
-                st.markdown(f'<pre style="color: white; white-space: pre-wrap; word-wrap: break-word;">{formatted_output}</pre>', unsafe_allow_html=True)
+                st.markdown(
+                    f'<pre style="color: white; white-space: pre-wrap; word-wrap: break-word;">{formatted_output}</pre>',
+                    unsafe_allow_html=True
+                )
             else:
                 st.markdown('<p style="color: white;">No text output captured.</p>', unsafe_allow_html=True)
 
@@ -195,15 +196,16 @@ def show():
             if not st.session_state.get("run_success", False):
                 st.error("Please run your code successfully before submitting.")
             elif st.session_state.get("username", "").strip():
+                # Grade the submission using your grading function
                 from grades.grade1 import grade_assignment
                 grade = grade_assignment(code_input)
 
-                # Update the grade in the records table for this username
+                # Update the grade in the records table (OVERWRITING the existing row's as1 column)
                 conn = sqlite3.connect(db_path)
                 cursor = conn.cursor()
                 cursor.execute("UPDATE records SET as1 = ? WHERE username = ?", (grade, st.session_state["username"]))
                 conn.commit()
-                updated_rows = cursor.rowcount  # Check how many rows were updated
+                updated_rows = cursor.rowcount
                 conn.close()
 
                 if updated_rows == 0:
@@ -211,24 +213,23 @@ def show():
                 else:
                     st.info("Grade updated locally. Pushing changes to GitHub...")
 
-                    # Attempt to push the updated DB to GitHub
                     try:
+                        # First push
                         push_db_to_github(db_path)
-                        # Re-open connection to verify the updated grade
+                        # Check after first push
                         conn = sqlite3.connect(db_path)
                         cursor = conn.cursor()
                         cursor.execute("SELECT as1 FROM records WHERE username = ?", (st.session_state["username"],))
                         result = cursor.fetchone()
                         conn.close()
-
                         if result:
                             new_grade = result[0]
                             st.success(f"Submission successful! Your grade: {new_grade}/100")
 
-                        # The existing code calls push_db_to_github a second time—preserving your logic:
+                        # Second push (original logic retained)
                         response = push_db_to_github(db_path)
                         if response.get("success"):
-                            # Re-open connection to verify the updated grade
+                            # Re-check the updated grade
                             conn = sqlite3.connect(db_path)
                             cursor = conn.cursor()
                             cursor.execute("SELECT as1 FROM records WHERE username = ?", (st.session_state["username"],))
@@ -242,7 +243,6 @@ def show():
                         else:
                             st.error("Error retrieving the updated grade.")
                             st.error(f"GitHub push failed: {response.get('error')}")
-
                     except Exception as e:
                         st.error(f"GitHub sync error: {str(e)}")
 
