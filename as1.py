@@ -1,5 +1,3 @@
-as1.py
-
 import streamlit as st
 import folium
 import pandas as pd
@@ -8,9 +6,18 @@ from io import StringIO
 from streamlit_folium import st_folium
 from utils.style1 import set_page_style
 import sqlite3
-from github_sync import push_db_to_github  # , pull_db_from_github  # Uncomment if needed
+
+# Import both push and pull from GitHub
+from github_sync import push_db_to_github, pull_db_from_github
 
 def show():
+    # Pull the latest DB at the start to ensure we're always working with the newest data
+    db_path = st.secrets["general"]["db_path"]
+    try:
+        pull_db_from_github(db_path)
+    except Exception as e:
+        st.warning(f"Warning: Could not pull DB from GitHub. Proceeding with local DB. Error: {e}")
+
     # Apply the custom page style
     set_page_style()
 
@@ -29,9 +36,6 @@ def show():
     if "username" not in st.session_state:
         st.session_state["username"] = ""
 
-    # Define the database path from secrets (ensure this points to your updated database file)
-    db_path = st.secrets["general"]["db_path"]
-
     st.title("Assignment 1: Mapping Coordinates and Calculating Distances")
 
     # ──────────────────────────────────────────────────────────────
@@ -46,6 +50,8 @@ def show():
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM records WHERE username = ?", (username_input,))
         user_record = cursor.fetchone()
+        conn.close()
+
         if user_record:
             st.session_state["username_entered"] = True
             st.session_state["username"] = username_input
@@ -53,7 +59,6 @@ def show():
         else:
             st.error("Invalid username. Please enter a registered username.")
             st.session_state["username_entered"] = False
-        conn.close()
 
     if st.session_state.get("username_entered", False):
         # ──────────────────────────────────────────────────────────────
@@ -91,6 +96,7 @@ def show():
             - Point 2: Latitude: 36.393432, Longitude: 44.586781
             - Point 3: Latitude: 36.660477, Longitude: 43.840174
             """)
+
         with tab2:
             st.markdown("""
             ### Detailed Grading Breakdown
@@ -176,7 +182,10 @@ def show():
             st.markdown('<h3 style="color: white;">📄 Captured Output</h3>', unsafe_allow_html=True)
             if st.session_state["captured_output"]:
                 formatted_output = st.session_state["captured_output"].replace('\n', '<br>')
-                st.markdown(f'<pre style="color: white; white-space: pre-wrap; word-wrap: break-word;">{formatted_output}</pre>', unsafe_allow_html=True)
+                st.markdown(
+                    f'<pre style="color: white; white-space: pre-wrap; word-wrap: break-word;">{formatted_output}</pre>',
+                    unsafe_allow_html=True
+                )
             else:
                 st.markdown('<p style="color: white;">No text output captured.</p>', unsafe_allow_html=True)
 
@@ -205,7 +214,7 @@ def show():
                 cursor = conn.cursor()
                 cursor.execute("UPDATE records SET as1 = ? WHERE username = ?", (grade, st.session_state["username"]))
                 conn.commit()
-                updated_rows = cursor.rowcount  # Check how many rows were updated
+                updated_rows = cursor.rowcount
                 conn.close()
 
                 if updated_rows == 0:
@@ -213,34 +222,28 @@ def show():
                 else:
                     st.info("Grade updated locally. Pushing changes to GitHub...")
                     
-                    # Attempt to push the updated DB to GitHub
+                    # Push the updated DB to GitHub (single push)
                     try:
-                        push_db_to_github(db_path)
-                        # Re-open connection to verify the updated grade
-                        conn = sqlite3.connect(db_path)
-                        cursor = conn.cursor()
-                        cursor.execute("SELECT as1 FROM records WHERE username = ?", (st.session_state["username"],))
-                        result = cursor.fetchone()
-                        conn.close()
-                        if result:
-                            new_grade = result[0]
-                            st.success(f"Submission successful! Your grade: {new_grade}/100")
-                        response = push_db_to_github(db_path)
-                        if response.get("success"):
+                        push_response = push_db_to_github(db_path)
+                        if push_response.get("success"):
+                            # Pull back to ensure local DB is in sync
+                            pull_db_from_github(db_path)
+                            
                             # Re-open connection to verify the updated grade
                             conn = sqlite3.connect(db_path)
                             cursor = conn.cursor()
                             cursor.execute("SELECT as1 FROM records WHERE username = ?", (st.session_state["username"],))
                             result = cursor.fetchone()
                             conn.close()
+
                             if result:
                                 new_grade = result[0]
                                 st.success(f"Submission successful! Your grade: {new_grade}/100")
                             else:
-                                st.error("Error retrieving the updated grade after push.")
+                                st.error("Error retrieving the updated grade after push/pull.")
                         else:
-                            st.error("Error retrieving the updated grade.")
-                            st.error(f"GitHub push failed: {response.get('error')}")
+                            st.error(f"GitHub push failed: {push_response.get('error')}")
+
                     except Exception as e:
                         st.error(f"GitHub sync error: {str(e)}")
 
@@ -252,4 +255,3 @@ def show():
 
 if __name__ == "__main__":
     show()
-
