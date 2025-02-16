@@ -6,18 +6,9 @@ from io import StringIO
 from streamlit_folium import st_folium
 from utils.style1 import set_page_style
 import sqlite3
-
-# Import both push and pull from GitHub
-from github_sync import push_db_to_github, pull_db_from_github
+from github_sync import push_db_to_github  # , pull_db_from_github  # Uncomment if needed
 
 def show():
-    # Pull the latest DB at the start to ensure we're always working with the newest data
-    db_path = st.secrets["general"]["db_path"]
-    try:
-        pull_db_from_github(db_path)
-    except Exception as e:
-        st.warning(f"Warning: Could not pull DB from GitHub. Proceeding with local DB. Error: {e}")
-
     # Apply the custom page style
     set_page_style()
 
@@ -35,6 +26,9 @@ def show():
         st.session_state["username_entered"] = False
     if "username" not in st.session_state:
         st.session_state["username"] = ""
+
+    # Define the database path from secrets (ensure this points to your updated database file)
+    db_path = st.secrets["general"]["db_path"]
 
     st.title("Assignment 1: Mapping Coordinates and Calculating Distances")
 
@@ -70,8 +64,10 @@ def show():
         with tab1:
             st.markdown("""
             ### Objective
-            In this assignment, you will write a Python script to plot three geographical coordinates on a map and calculate the distance between each pair of points in kilometers. This will help you practice working with geospatial data and Python libraries for mapping and calculations.
-            
+            In this assignment, you will write a Python script to plot three geographical coordinates on a map
+            and calculate the distance between each pair of points in kilometers. This will help you practice
+            working with geospatial data and Python libraries for mapping and calculations.
+
             **Assignment: Week 1 – Mapping Coordinates and Calculating Distances in Python**
             """)
         with st.expander("See More"):
@@ -90,13 +86,12 @@ def show():
                - Add markers to the map for each coordinate.
                - Add polylines to connect the points.
                - Add popups to display distance information.
-            
+
             **Coordinates:**
             - Point 1: Latitude: 36.325735, Longitude: 43.928414
             - Point 2: Latitude: 36.393432, Longitude: 44.586781
             - Point 3: Latitude: 36.660477, Longitude: 43.840174
             """)
-
         with tab2:
             st.markdown("""
             ### Detailed Grading Breakdown
@@ -113,10 +108,10 @@ def show():
             - **Code Execution (10 points):**
                 - Checks if the code runs without errors.
             - **Code Quality (10 points):**
-                - **Variable Naming:** 2 points (deducted if single-letter variables are used).
-                - **Spacing:** 2 points (deducted if improper spacing is found).
-                - **Comments:** 2 points (deducted if no comments are present).
-                - **Code Organization:** 2 points (deducted if no blank lines are used for separation).
+                - **Variable Naming:** 2 points
+                - **Spacing:** 2 points
+                - **Comments:** 2 points
+                - **Code Organization:** 2 points
             """)
             with st.expander("See More"):
                 st.markdown("""
@@ -214,21 +209,18 @@ def show():
                 cursor = conn.cursor()
                 cursor.execute("UPDATE records SET as1 = ? WHERE username = ?", (grade, st.session_state["username"]))
                 conn.commit()
-                updated_rows = cursor.rowcount
+                updated_rows = cursor.rowcount  # Check how many rows were updated
                 conn.close()
 
                 if updated_rows == 0:
                     st.error("No record updated. Please check the username or database integrity.")
                 else:
                     st.info("Grade updated locally. Pushing changes to GitHub...")
-                    
-                    # Push the updated DB to GitHub (single push)
+
+                    # Attempt to push the updated DB to GitHub (SINGLE push)
                     try:
-                        push_response = push_db_to_github(db_path)
-                        if push_response.get("success"):
-                            # Pull back to ensure local DB is in sync
-                            pull_db_from_github(db_path)
-                            
+                        response = push_db_to_github(db_path)
+                        if response.get("success"):
                             # Re-open connection to verify the updated grade
                             conn = sqlite3.connect(db_path)
                             cursor = conn.cursor()
@@ -240,9 +232,10 @@ def show():
                                 new_grade = result[0]
                                 st.success(f"Submission successful! Your grade: {new_grade}/100")
                             else:
-                                st.error("Error retrieving the updated grade after push/pull.")
+                                st.error("Error retrieving the updated grade after push.")
                         else:
-                            st.error(f"GitHub push failed: {push_response.get('error')}")
+                            st.error("Error retrieving the updated grade.")
+                            st.error(f"GitHub push failed: {response.get('error')}")
 
                     except Exception as e:
                         st.error(f"GitHub sync error: {str(e)}")
