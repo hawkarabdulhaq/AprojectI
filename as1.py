@@ -6,17 +6,9 @@ from io import StringIO
 from streamlit_folium import st_folium
 from utils.style1 import set_page_style
 import sqlite3
-# IMPORTANT: We'll pull the DB from GitHub, so uncomment (or make sure it is imported)
-from github_sync import push_db_to_github, pull_db_from_github
+from github_sync import push_db_to_github  # , pull_db_from_github  # Uncomment if needed
 
 def show():
-    # 1) Pull the DB at the very start to ensure local DB is up-to-date
-    db_path = st.secrets["general"]["db_path"]
-    try:
-        pull_db_from_github(db_path)
-    except Exception as e:
-        st.warning(f"Warning: Could not pull DB from GitHub at start. Using local DB. Error: {e}")
-
     # Apply the custom page style
     set_page_style()
 
@@ -29,16 +21,18 @@ def show():
         st.session_state["dataframe_object"] = None
     if "captured_output" not in st.session_state:
         st.session_state["captured_output"] = ""
-    # For username, we require users to enter it each time they submit
     if "username_entered" not in st.session_state:
         st.session_state["username_entered"] = False
     if "username" not in st.session_state:
         st.session_state["username"] = ""
 
+    # Define the database path from secrets (ensure this points to your updated database file)
+    db_path = st.secrets["general"]["db_path"]
+
     st.title("Assignment 1: Mapping Coordinates and Calculating Distances")
 
     # ──────────────────────────────────────────────────────────────
-    # Always Show Assignment Details (So the user can see it right away)
+    # Step 2: Review Assignment Details (ALWAYS SHOWN)
     # ──────────────────────────────────────────────────────────────
     st.markdown('<h1 style="color: #ADD8E6;">Step 2: Review Assignment Details</h1>', unsafe_allow_html=True)
     tab1, tab2 = st.tabs(["Assignment Details", "Grading Details"])
@@ -49,7 +43,7 @@ def show():
         In this assignment, you will write a Python script to plot three geographical coordinates on a map
         and calculate the distance between each pair of points in kilometers. This will help you practice
         working with geospatial data and Python libraries for mapping and calculations.
-
+        
         **Assignment: Week 1 – Mapping Coordinates and Calculating Distances in Python**
         """)
     with st.expander("See More"):
@@ -68,7 +62,7 @@ def show():
            - Add markers to the map for each coordinate.
            - Add polylines to connect the points.
            - Add popups to display distance information.
-
+        
         **Coordinates:**
         - Point 1: Latitude: 36.325735, Longitude: 43.928414
         - Point 2: Latitude: 36.393432, Longitude: 44.586781
@@ -90,10 +84,10 @@ def show():
         - **Code Execution (10 points):**
             - Checks if the code runs without errors.
         - **Code Quality (10 points):**
-            - **Variable Naming:** 2 points
-            - **Spacing:** 2 points
-            - **Comments:** 2 points
-            - **Code Organization:** 2 points
+            - **Variable Naming:** 2 points (deducted if single-letter variables are used).
+            - **Spacing:** 2 points (deducted if improper spacing is found).
+            - **Comments:** 2 points (deducted if no comments are present).
+            - **Code Organization:** 2 points (deducted if no blank lines are used for separation).
         """)
         with st.expander("See More"):
             st.markdown("""
@@ -106,7 +100,6 @@ def show():
                 - Checks if polylines connect the points.
             - **Popups (5 points):**
                 - Checks if popups are added to the markers.
-
             #### 3. Distance Calculations (30 points)
             - **Geodesic Implementation (10 points):**
                 - Checks if the geodesic function is used correctly.
@@ -115,19 +108,12 @@ def show():
             """)
 
     # ──────────────────────────────────────────────────────────────
-    # Step 1: Enter Your Username (moved below the assignment details)
+    # Step 1: Enter Your Username (login check)
     # ──────────────────────────────────────────────────────────────
     st.markdown('<h1 style="color: #ADD8E6;">Step 1: Enter Your Username</h1>', unsafe_allow_html=True)
     username_input = st.text_input("Username", key="as1_username")
     enter_username = st.button("Enter")
     if enter_username and username_input:
-        # Pull again to ensure the DB is fresh before verifying username
-        try:
-            pull_db_from_github(db_path)
-        except Exception as e:
-            st.warning(f"Warning: Could not pull DB at login check. Using local DB. Error: {e}")
-
-        # Check in the records table (not the users table)
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM records WHERE username = ?", (username_input,))
@@ -143,7 +129,7 @@ def show():
             st.session_state["username_entered"] = False
 
     # ──────────────────────────────────────────────────────────────
-    # Step 3: Run and Submit Code (displayed only if user is logged in)
+    # Step 3: Run and Submit Your Code (only if logged in)
     # ──────────────────────────────────────────────────────────────
     if st.session_state.get("username_entered", False):
         st.markdown('<h1 style="color: #ADD8E6;">Step 3: Run and Submit Your Code</h1>', unsafe_allow_html=True)
@@ -173,31 +159,23 @@ def show():
                 st.session_state["captured_output"] = captured_output.getvalue()
 
                 # Look for specific outputs (folium.Map, pandas.DataFrame)
-                map_object = None
-                dataframe_object = None
-                for val in local_context.values():
-                    if isinstance(val, folium.Map):
-                        map_object = val
-                    if isinstance(val, pd.DataFrame):
-                        dataframe_object = val
+                map_object = next((obj for obj in local_context.values() if isinstance(obj, folium.Map)), None)
+                dataframe_object = next((obj for obj in local_context.values() if isinstance(obj, pd.DataFrame)), None)
 
                 st.session_state["map_object"] = map_object
                 st.session_state["dataframe_object"] = dataframe_object
+
                 st.session_state["run_success"] = True
 
             except Exception as e:
                 sys.stdout = sys.__stdout__
                 st.error(f"An error occurred while running your code: {e}")
 
-        # If code ran successfully, display outputs
         if st.session_state["run_success"]:
             st.markdown('<h3 style="color: white;">📄 Captured Output</h3>', unsafe_allow_html=True)
             if st.session_state["captured_output"]:
                 formatted_output = st.session_state["captured_output"].replace('\n', '<br>')
-                st.markdown(
-                    f'<pre style="color: white; white-space: pre-wrap; word-wrap: break-word;">{formatted_output}</pre>',
-                    unsafe_allow_html=True
-                )
+                st.markdown(f'<pre style="color: white; white-space: pre-wrap; word-wrap: break-word;">{formatted_output}</pre>', unsafe_allow_html=True)
             else:
                 st.markdown('<p style="color: white;">No text output captured.</p>', unsafe_allow_html=True)
 
@@ -209,19 +187,14 @@ def show():
                 st.markdown("### 📊 DataFrame Output")
                 st.dataframe(st.session_state["dataframe_object"])
 
-        # Submit Button: Update Grade and Push to GitHub
+        # ──────────────────────────────────────────────────────────────
+        # Submit Code Button (updates grade and pushes DB)
+        # ──────────────────────────────────────────────────────────────
         submit_button = st.button("Submit Code", key="submit_code_button")
         if submit_button:
             if not st.session_state.get("run_success", False):
                 st.error("Please run your code successfully before submitting.")
             elif st.session_state.get("username", "").strip():
-                # (A) PULL DB again to ensure no one else’s changes are overwritten
-                try:
-                    pull_db_from_github(db_path)
-                except Exception as e:
-                    st.warning(f"Warning: Could not pull DB before update. Using local DB. Error: {e}")
-
-                # Grade the submission using your grading function
                 from grades.grade1 import grade_assignment
                 grade = grade_assignment(code_input)
 
@@ -230,7 +203,7 @@ def show():
                 cursor = conn.cursor()
                 cursor.execute("UPDATE records SET as1 = ? WHERE username = ?", (grade, st.session_state["username"]))
                 conn.commit()
-                updated_rows = cursor.rowcount
+                updated_rows = cursor.rowcount  # Check how many rows were updated
                 conn.close()
 
                 if updated_rows == 0:
@@ -238,35 +211,42 @@ def show():
                 else:
                     st.info("Grade updated locally. Pushing changes to GitHub...")
 
-                    # (B) SINGLE push to GitHub
+                    # Attempt to push the updated DB to GitHub
                     try:
+                        push_db_to_github(db_path)
+                        # Re-open connection to verify the updated grade
+                        conn = sqlite3.connect(db_path)
+                        cursor = conn.cursor()
+                        cursor.execute("SELECT as1 FROM records WHERE username = ?", (st.session_state["username"],))
+                        result = cursor.fetchone()
+                        conn.close()
+
+                        if result:
+                            new_grade = result[0]
+                            st.success(f"Submission successful! Your grade: {new_grade}/100")
+
+                        # The existing code calls push_db_to_github a second time—preserving your logic:
                         response = push_db_to_github(db_path)
                         if response.get("success"):
-                            # (C) Pull again to ensure local DB is now fully synced
-                            try:
-                                pull_db_from_github(db_path)
-                            except Exception as e:
-                                st.warning(f"Warning: Could not pull DB after push. Using local DB. Error: {e}")
-
                             # Re-open connection to verify the updated grade
                             conn = sqlite3.connect(db_path)
                             cursor = conn.cursor()
                             cursor.execute("SELECT as1 FROM records WHERE username = ?", (st.session_state["username"],))
                             result = cursor.fetchone()
                             conn.close()
-
                             if result:
                                 new_grade = result[0]
                                 st.success(f"Submission successful! Your grade: {new_grade}/100")
                             else:
-                                st.error("Error retrieving the updated grade after push/pull.")
+                                st.error("Error retrieving the updated grade after push.")
                         else:
                             st.error("Error retrieving the updated grade.")
                             st.error(f"GitHub push failed: {response.get('error')}")
+
                     except Exception as e:
                         st.error(f"GitHub sync error: {str(e)}")
 
-                # Clear username so the user must re-enter it next time
+                # Clear username so the user must re-enter it on the next submission
                 st.session_state["username_entered"] = False
                 st.session_state["username"] = ""
             else:
