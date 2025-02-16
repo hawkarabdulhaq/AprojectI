@@ -194,3 +194,5 @@ if st.session_state.get("username_entered", False):
             st.session_state["username_entered"] = False
             st.session_state["username"] = ""
             
+if __name__ == "__main__":
+    show()
