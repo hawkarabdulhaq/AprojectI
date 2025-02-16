@@ -82,8 +82,11 @@ def show():
         height=600,
     )
 
-
     with tab5:
+        st.header("2.4 Merging and Reversing Scripts: Essential Skills for Python")
+        st.video("https://youtu.be/-ty3itUL1Jk")
+
+    with tab6:
         st.header("2.5 Google Colab for Researchers: A Beginner-Friendly Tool for Advanced Insights")
         st.write(
         "Google Colab is a powerful tool for researchers across various fields, offering a free and user-friendly platform for coding, data analysis, and collaboration. Even if you're not familiar with coding, Colab makes advanced computational tasks more accessible. Here's why researchers love Google Colab and how it enhances research credibility:"
