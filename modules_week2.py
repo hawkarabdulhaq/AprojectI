@@ -83,7 +83,7 @@ def show():
     )
 
 
-    with tab6:
+    with tab5:
         st.header("2.5 Google Colab for Researchers: A Beginner-Friendly Tool for Advanced Insights")
         st.write(
         "Google Colab is a powerful tool for researchers across various fields, offering a free and user-friendly platform for coding, data analysis, and collaboration. Even if you're not familiar with coding, Colab makes advanced computational tasks more accessible. Here's why researchers love Google Colab and how it enhances research credibility:"
